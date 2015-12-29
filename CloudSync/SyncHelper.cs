@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using AndroAdminDataAccess.DataAccess;
 using AndroCloudDataAccess.DataAccess;
 using AndroCloudDataAccessEntityFramework.DataAccess;
 using CloudSyncModel;
@@ -11,6 +12,8 @@ namespace CloudSync
 {
     public class SyncHelper
     {
+        public static string ConnectionStringOverride { get; set; }
+
         /// <summary>
         /// Must be called from the Cloud Master.  Syncs Cloud master with all cloud servers
         /// </summary>
@@ -34,15 +37,19 @@ namespace CloudSync
             }
         }
 
-        public static string ExportSyncXml(int fromVersion, int toVersion)
+        public static string ExportSyncXml(int fromVersion, int masterVersion)
         {
             SyncModel syncModel = new SyncModel();
 
             // The current data version
-            syncModel.DataVersion = toVersion;
-            
+            syncModel.DataVersion = masterVersion;
+
+            // Get the store DAO
+            IStoreDAO storeDAO = AndroAdminDataAccessFactory.GetStoreDAO();
+            if (SyncHelper.ConnectionStringOverride != null) storeDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+
             // Get all the stores that have changed since the last sync with this specific cloud server
-            List<AndroAdminDataAccess.Domain.Store> stores = (List<AndroAdminDataAccess.Domain.Store>)AndroAdminDataAccessFactory.GetStoreDAO().GetAfterDataVersion(fromVersion);
+            List<AndroAdminDataAccess.Domain.Store> stores = (List<AndroAdminDataAccess.Domain.Store>)storeDAO.GetAfterDataVersion(fromVersion);
             foreach (AndroAdminDataAccess.Domain.Store store in stores)
             {
                 // Add the store
@@ -56,20 +63,29 @@ namespace CloudSync
                 syncModel.Stores.Add(syncStore);
             }
 
+            // Get the partner DAO
+            IPartnerDAO partnerDAO = AndroAdminDataAccessFactory.GetPartnerDAO();
+            if (SyncHelper.ConnectionStringOverride != null) partnerDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+
             // Get all the partners that have changed since the last sync with this specific cloud server
-            List<AndroAdminDataAccess.Domain.Partner> partners = (List<AndroAdminDataAccess.Domain.Partner>)AndroAdminDataAccessFactory.GetPartnerDAO().GetAfterDataVersion(fromVersion);
+            List<AndroAdminDataAccess.Domain.Partner> partners = (List<AndroAdminDataAccess.Domain.Partner>)partnerDAO.GetAfterDataVersion(fromVersion);
             foreach (AndroAdminDataAccess.Domain.Partner partner in partners)
             {
                 // Add the partner
                 Partner syncPartner = new Partner()
                 {
+                    Id = partner.Id,
                     ExternalId = partner.ExternalId,
                     Name = partner.Name
                 };
                 syncModel.Partners.Add(syncPartner);
 
+                // Get the partner DAO
+                IACSApplicationDAO acsApplicationDAO = AndroAdminDataAccessFactory.GetACSApplicationDAO();
+                if (SyncHelper.ConnectionStringOverride != null) acsApplicationDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+
                 // Get all the applications that have changed for this partner since the last sync with this specific cloud server
-                IList<AndroAdminDataAccess.Domain.ACSApplication> acsApplications = AndroAdminDataAccessFactory.GetACSApplicationDAO().GetByPartnerAfterDataVersion(partner.Id, fromVersion);
+                IList<AndroAdminDataAccess.Domain.ACSApplication> acsApplications = acsApplicationDAO.GetByPartnerAfterDataVersion(partner.Id, fromVersion);
                 foreach (AndroAdminDataAccess.Domain.ACSApplication acsApplication in acsApplications)
                 {
                     // Add the application
@@ -81,8 +97,8 @@ namespace CloudSync
                     syncPartner.Applications.Add(syncApplication);
 
                     // Get all the application stores that have changed for this application since the last sync with this specific cloud server
-                    StringBuilder siteIds = new StringBuilder(); 
-                    IList<AndroAdminDataAccess.Domain.Store> acsApplicationStores = AndroAdminDataAccessFactory.GetStoreDAO().GetByACSApplicationId(acsApplication.Id);
+                    StringBuilder siteIds = new StringBuilder();
+                    IList<AndroAdminDataAccess.Domain.Store> acsApplicationStores = storeDAO.GetByACSApplicationId(acsApplication.Id);
                     foreach (AndroAdminDataAccess.Domain.Store store in acsApplicationStores)
                     {
                         if (siteIds.Length > 0) siteIds.Append(",");
