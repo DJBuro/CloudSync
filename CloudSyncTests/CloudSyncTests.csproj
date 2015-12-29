@@ -117,7 +117,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\WebSites\AndroAdmin\AndroAdmin.csproj">
       <Project>{ae3d99c8-768e-4a65-9684-c980b80602aa}</Project>
-      <Name>AndroAdmin</Name>
+      <Name>AndroAdmin %28UI\AndroAdmin%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\CloudSyncModel\CloudSyncModel.csproj">
       <Project>{56aa880a-eff0-440f-92f5-39f2c578cbdd}</Project>
