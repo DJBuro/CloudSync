@@ -7,6 +7,7 @@ using CloudSyncModel.Menus;
 using CloudSyncModel.HostV2;
 using CloudSyncModel.StoreDeviceModels;
 
+
 namespace CloudSyncModel
 {
     [XmlRoot(ElementName = "CloudSync")]
@@ -56,5 +57,8 @@ namespace CloudSyncModel
         /// </summary>
         /// <value>The store device models.</value>
         public StoreDevicesModels StoreDeviceModels { get; set; }
+
+        public List<DeliveryArea> DeliveryAreas { get; set; }
+
     }
 }
