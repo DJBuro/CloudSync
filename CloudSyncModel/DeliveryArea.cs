@@ -20,6 +20,6 @@ namespace CloudSyncModel
         public int DeliveryZoneId { set; get; }
         public string PostCodeSectorName { set; get; }
         public bool IsSelected { set; get; }
-        public Guid StoreId { set; get; }        
+        public string StoreId { set; get; }        
     }
 }
