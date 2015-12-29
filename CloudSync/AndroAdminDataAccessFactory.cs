@@ -67,5 +67,10 @@ namespace CloudSync
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.SettingsDAO();
         }
+
+        public static IStorePaymentProviderDAO GetStorePaymentProviderDAO()
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.StorePaymentProviderDAO();
+        }
     }
 }

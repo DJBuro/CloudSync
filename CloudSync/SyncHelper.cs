@@ -161,6 +161,28 @@ namespace CloudSync
                 }
             }
 
+            // Get the store payment provider DAO
+            IStorePaymentProviderDAO storePaymentProviderDAO = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
+            if (SyncHelper.ConnectionStringOverride != null) storePaymentProviderDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+
+            syncModel.StorePaymentProviders = new List<StorePaymentProvider>();
+
+            // Get all the payment providers that have changed since the last sync with this specific cloud server
+            List<AndroAdminDataAccess.Domain.StorePaymentProvider> storePaymentProviders = (List<AndroAdminDataAccess.Domain.StorePaymentProvider>)storePaymentProviderDAO.GetAfterDataVersion(fromVersion);
+            foreach (AndroAdminDataAccess.Domain.StorePaymentProvider storePaymentProvider in storePaymentProviders)
+            {
+                StorePaymentProvider diffStorePaymentProvider = new StorePaymentProvider()
+                {
+                    Id = storePaymentProvider.Id,
+                    ClientId = storePaymentProvider.ClientId,
+                    ClientPassword = storePaymentProvider.ClientPassword,
+                    DisplayText = storePaymentProvider.DisplayText,
+                    ProviderName = storePaymentProvider.ProviderName
+                };
+
+                syncModel.StorePaymentProviders.Add(diffStorePaymentProvider);
+            }
+
             // Serialize the sync model to XML
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
