@@ -17,6 +17,7 @@ namespace CloudSyncModel
             this.FromDataVersion = 0;
             this.ToDataVersion = 0;
             this.Stores = new List<Store>();
+            this.StoreEdt = new List<StoreEdt>();
             this.Partners = new List<Partner>();
 
             this.HubUpdates = new HubUpdates();
@@ -32,6 +33,8 @@ namespace CloudSyncModel
         public int ToDataVersion { get; set; }
 
         public List<Store> Stores { get; set; }
+        public List<StoreEdt> StoreEdt { get; set; }
+
         public List<Partner> Partners { get; set; }
         public List<StorePaymentProvider> StorePaymentProviders { get; set; }
 
