@@ -8,8 +8,6 @@ namespace CloudSync
 {
     public class AndroAdminDataAccessFactory
     {
-        
-
         public static IAMSServerDAO GetAMSServerDAO()
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.AMSServerDAO();
@@ -80,11 +78,15 @@ namespace CloudSync
             return new AndroAdminDataAccess.EntityFramework.DataAccess.HubDataService();
         }
 
-
         public static IStoreHubDataService GetSiteHubDAO()
         {
-            // TODO: Implement this method
-            throw new NotImplementedException();
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.StoreHubDataService();
         }
+
+        public static IHubResetDataService GetHubResetDataService() 
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HubDataService();
+        }
+
     }
 }
