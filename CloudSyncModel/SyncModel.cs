@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using CloudSyncModel.Hubs;
 using CloudSyncModel.Menus;
+using CloudSyncModel.HostV2;
 
 namespace CloudSyncModel
 {
@@ -19,6 +20,8 @@ namespace CloudSyncModel
 
             this.HubUpdates = new HubUpdates();
             this.MenuUpdates = new StoreMenuUpdates();
+
+            this.HostV2Models = new HostV2Models();
         }
 
         public int FromDataVersion { get; set; }
@@ -27,7 +30,7 @@ namespace CloudSyncModel
         public List<Store> Stores { get; set; }
         public List<Partner> Partners { get; set; }
         public List<StorePaymentProvider> StorePaymentProviders { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the hub updates.
         /// </summary>
@@ -39,5 +42,13 @@ namespace CloudSyncModel
         /// </summary>
         /// <value>The menu updates.</value>
         public StoreMenuUpdates MenuUpdates { get; set; }
+
+        /// <summary>
+        /// Gets or sets the host v2 models.
+        /// </summary>
+        /// <value>The host v2 models.</value>
+        public HostV2Models HostV2Models { get; set; }
     }
+
+    
 }

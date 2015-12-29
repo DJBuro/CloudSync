@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="Address.cs" />
     <Compile Include="Application.cs" />
+    <Compile Include="HostV2\HostV2Models.cs" />
     <Compile Include="Hubs\HubHost.cs" />
     <Compile Include="Hubs\SiteHubReset.cs" />
     <Compile Include="Hubs\SiteHubs.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="SyncModel.cs" />
     <Compile Include="TimeSpanBlock.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

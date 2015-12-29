@@ -93,6 +93,29 @@ namespace CloudSync
             return new AndroAdminDataAccess.EntityFramework.DataAccess.StoreMenuThumbnailsDataService();
         }
 
-        public static 
+        /// <summary>
+        /// Gets the host v2 data service.
+        /// </summary>
+        /// <returns></returns>
+        public static IHostV2DataService GetHostV2DataService()
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostV2DataService();
+        }
+
+        internal static IHostV2ForStoreDataService GetHostV2ForStoreDataService()
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostV2ForStoreDataService();
+        }
+
+        internal static IHostV2ForApplicationDataService GetHostV2ForApplicationDataService()
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostV2ForApplicationDataService();
+        }
+
+        internal static IHostTypesDataService GetHostTypesDataService() 
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostTypesDataService();
+        }
+
     }
 }

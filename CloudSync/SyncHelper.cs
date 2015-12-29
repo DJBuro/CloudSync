@@ -1,12 +1,13 @@
-﻿using System;
+﻿using AndroAdminDataAccess.DataAccess;
+using AndroCloudDataAccess.DataAccess;
+using AndroCloudDataAccessEntityFramework.DataAccess;
+using CloudSyncModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using AndroAdminDataAccess.DataAccess;
-using AndroCloudDataAccess.DataAccess;
-using AndroCloudDataAccessEntityFramework.DataAccess;
-using CloudSyncModel;
+using CloudSyncModel.HostV2;
 
 namespace CloudSync
 {
@@ -49,7 +50,7 @@ namespace CloudSync
                 {
                     // 2) Generate a block of XML that contains Add, Delete, Update objects that have changed on Cloud Master after the Cloud Servers version for:
                     string syncXml = string.Empty;
-                    
+
                     errorMessage = SyncHelper.ExportSyncXml(fromVersion, toVersion, out syncXml);
                     if (errorMessage.Length != 0) return errorMessage;
 
@@ -81,11 +82,6 @@ namespace CloudSync
             // Get the store payment provider DAO
             IStorePaymentProviderDAO storePaymentProviderDao = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
 
-            //get the hub and site-hub data services 
-            IHubDataService hubDataDao = AndroAdminDataAccessFactory.GetHubDAO();
-            IStoreHubDataService storeHubDataDao = AndroAdminDataAccessFactory.GetSiteHubDAO();
-            IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDAO();
-
             //get the list of hosts, host types and connections based on version. 
             //var a = AndroAdminDataAccessFactory.gethost
 
@@ -102,51 +98,92 @@ namespace CloudSync
 
             SyncHelper.AddInStorePaymentProviders(storePaymentProviderDao, syncModel, fromVersion);
 
+            //get the hub and site-hub data services 
+            IHubDataService hubDataDao = AndroAdminDataAccessFactory.GetHubDAO();
+            IStoreHubDataService storeHubDataDao = AndroAdminDataAccessFactory.GetSiteHubDAO();
+            IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDAO();
             SyncHelper.AddInHubTasks(hubDataDao, storeHubDataDao, storeHubResetDao, syncModel, fromVersion);
-           
-            //SyncHelper.AddInHosts(
 
             IStoreMenuThumbnailsDataService storeMenuThumbnailsDataService = AndroAdminDataAccessFactory.GetStoreMenuThumbnailDAO();
             SyncHelper.AddinMenuUpdates(storeMenuThumbnailsDataService, syncModel, fromVersion);
-            
+
+            IHostTypesDataService hostTypesDataService = AndroAdminDataAccessFactory.GetHostTypesDataService();
+            IHostV2DataService hostV2DataService = AndroAdminDataAccessFactory.GetHostV2DataService();
+            IHostV2ForStoreDataService hostV2ForStore = AndroAdminDataAccessFactory.GetHostV2ForStoreDataService();
+            IHostV2ForApplicationDataService hostV2ForApplication = AndroAdminDataAccessFactory.GetHostV2ForApplicationDataService();
+            SyncHelper.AddInHostList(hostTypesDataService, hostV2DataService, hostV2ForApplication, hostV2ForStore, syncModel, fromVersion);
             // Serialize the sync model to XML
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
         }
-  
+
+        private static void AddInHostList(IHostTypesDataService hostTypesDataService,
+            IHostV2DataService hostV2DataService,
+            IHostV2ForApplicationDataService hostV2ForApplication,
+            IHostV2ForStoreDataService hostV2ForStore,
+            SyncModel syncModel,
+            int fromVersion)
+        {
+            var hosts = hostV2DataService.List(e => e.DataVersion > fromVersion);
+            var hosttypes = hostTypesDataService.List(e => true);
+            var hostApplications = hostV2ForApplication.ListHostConnections(e => e.HostV2.Any(hostV2 => hostV2.DataVersion > fromVersion));
+            var hostStores = hostV2ForStore.ListHostConnections(e => e.HostV2.Any(hostV2 => hostV2.DataVersion > fromVersion));
+
+            syncModel.HostV2Models = new CloudSyncModel.HostV2.HostV2Models()
+            {
+                HostTypes = hosttypes.Select(e=> e.Name).ToList(),
+                Hosts = hosts.Select(e => new HostV2Model()
+                {
+                    Id = e.Id,
+                    HostTypeName = e.HostType.Name,
+                    LastUpdateUtc = e.LastUpdateUtc,
+                    OptInOnly = e.OptInOnly,
+                    Order = e.Order,
+                    Public = e.Public,
+                    Url = e.Url,
+                    Version = e.Version
+                }).ToList(),
+                Stores = hostStores.Select(e=> new HostLinkStore(){ AndromedaStoreId = e.AndromedaSiteId, HostId = e.HostId }).ToList(),
+                Applications = hostApplications.Select(e=> new HostLinkApplication(){ ApplicationId = e.ApplicationId, HostId = e.HostId }).ToList()
+            };
+        }
+
         private static void AddInHubTasks(IHubDataService hubDataDao, IStoreHubDataService storeHubDataDao, IHubResetDataService storeHubResetDao, SyncModel syncModel, int fromVersion)
         {
             var signalRHubs = hubDataDao.GetAfterDataVersion(fromVersion);
-            
+
             var activeHubs = signalRHubs.Where(e => !e.Removed && e.Active).ToList();
             var inactiveHubs = signalRHubs.Where(e => e.Removed || !e.Active).ToList();
             var resets = storeHubResetDao.GetStoresToResetAfterDataVersion(fromVersion);
 
-            syncModel.HubUpdates = new CloudSyncModel.Hubs.HubUpdates() 
+            syncModel.HubUpdates = new CloudSyncModel.Hubs.HubUpdates()
             {
-                ActiveHubList = activeHubs.Select(e=> 
-                    new CloudSyncModel.Hubs.HubHostModel(){ 
-                        Id = e.Id, 
-                        Url = e.Address, 
+                ActiveHubList = activeHubs.Select(e =>
+                    new CloudSyncModel.Hubs.HubHostModel()
+                    {
+                        Id = e.Id,
+                        Url = e.Address,
                         SiteHubs = storeHubDataDao.GetSitesUsingHub(e.Id).Select(s => new CloudSyncModel.Hubs.SiteHubs() { HubId = e.Id, ExternalId = s.StoreExternalId }).ToList()
-                }).ToList(),
-                InActiveHubList = inactiveHubs.Select(e=> new CloudSyncModel.Hubs.HubHostModel(){
+                    }).ToList(),
+                InActiveHubList = inactiveHubs.Select(e => new CloudSyncModel.Hubs.HubHostModel()
+                {
                     Id = e.Id,
                     Url = e.Address,
                     SiteHubs = new List<CloudSyncModel.Hubs.SiteHubs>() //empty list as the tables will enforce the dropping related rows
                 }).ToList(),
-                SiteHubHardwareKeyResets = resets.Select(e=> new CloudSyncModel.Hubs.SiteHubReset(){
+                SiteHubHardwareKeyResets = resets.Select(e => new CloudSyncModel.Hubs.SiteHubReset()
+                {
                     AndromedaSiteId = e.AndromedaSiteId,
                     ExternalSiteId = e.ExternalSiteId
                 }).ToList()
             };
         }
-  
+
         private static void AddinMenuUpdates(IStoreMenuThumbnailsDataService dataServicee, SyncModel syncModel, int fromVersion)
         {
             IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> changes = dataServicee.GetAfterDataVersion(fromVersion);
-            foreach (var change in changes) 
+            foreach (var change in changes)
             {
                 syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate
                     {
@@ -231,7 +268,7 @@ namespace CloudSync
 
         private static void AddInStoreUpdates(IStoreDAO storeDao, SyncModel syncModel, int fromVersion)
         {
-            
+
             // Get all the stores that have changed since the last sync with this specific cloud server
             var stores = storeDao.GetAfterDataVersion(fromVersion);// as List<AndroAdminDataAccess.Domain.Store>;
 
