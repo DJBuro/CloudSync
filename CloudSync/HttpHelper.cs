@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using AndroAdmin.Helpers;
 
 namespace CloudSync
 {
@@ -12,6 +13,8 @@ namespace CloudSync
         public static bool RestGet(string url, out string xml)
         {
             bool success = false;
+
+            ErrorHelper.LogError("CloudSync.HttpHelper.RestGet: url=" + url, null);
 
 //            Andromeda.Logging.Log.LogEvent("AndroAdminClient", "GET url " + url.Replace("429C19EE237245358F8E1189ABDB1388", "XXX"), Andromeda.Logging.EventTypeEnum.Information);
 
@@ -55,7 +58,7 @@ namespace CloudSync
             }
             catch (Exception exception)
             {
-//                Andromeda.Logging.Log.LogEvent("AndroAdminClient", "GET failed", Andromeda.Logging.EventTypeEnum.Error, exception);
+                ErrorHelper.LogError("CloudSync.HttpHelper.RestGet", exception);
 
                 success = false;
             }
