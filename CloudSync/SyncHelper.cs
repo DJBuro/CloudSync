@@ -75,6 +75,25 @@ namespace CloudSync
             List<AndroAdminDataAccess.Domain.Store> stores = (List<AndroAdminDataAccess.Domain.Store>)storeDAO.GetAfterDataVersion(fromVersion);
             foreach (AndroAdminDataAccess.Domain.Store store in stores)
             {
+                // Sync store opening times
+                List<TimeSpanBlock> openingHours = new List<TimeSpanBlock>();
+                if (store.OpeningHours != null)
+                {
+                    foreach (AndroAdminDataAccess.Domain.TimeSpanBlock timeSpanBlock in store.OpeningHours)
+                    {
+                        openingHours.Add
+                        (
+                            new TimeSpanBlock()
+                            {
+                                Day = timeSpanBlock.Day,
+                                EndTime = timeSpanBlock.EndTime,
+                                OpenAllDay = timeSpanBlock.OpenAllDay,
+                                StartTime = timeSpanBlock.StartTime
+                            }
+                        );
+                    }
+                }
+
                 // Add the store
                 Store syncStore = new Store()
                 {
@@ -109,8 +128,9 @@ namespace CloudSync
                         Long = store.Address.Long,
                         CountryId = store.Address.Country.Id
                     },
-                    OpeningHours = new Dictionary<string, List<TimeSpanBlock>> OpeningTimesByDay { get; set; }
+                    OpeningHours = openingHours
                 };
+
                 syncModel.Stores.Add(syncStore);
             }
 
