@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AndroAdminDataAccessFactory.cs" />
+    <Compile Include="Model\Application.cs" />
+    <Compile Include="Model\Partner.cs" />
     <Compile Include="Model\Store.cs" />
     <Compile Include="Model\SyncModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,6 +56,14 @@
     <ProjectReference Include="..\DataAccess\AndroAdminDataAccess\AndroAdminDataAccess.csproj">
       <Project>{3ecf6405-90d5-4c8b-abcc-c0baedfdeef9}</Project>
       <Name>AndroAdminDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess\AndroCloudDataAccessEntityFramework\AndroCloudDataAccessEntityFramework.csproj">
+      <Project>{0520364a-a9b3-4ad6-b125-d935dccaf731}</Project>
+      <Name>AndroCloudDataAccessEntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataAccess\AndroCloudDataAccess\AndroCloudDataAccess.csproj">
+      <Project>{408fba0e-e649-493e-b4d4-8a5328265450}</Project>
+      <Name>AndroCloudDataAccess</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
