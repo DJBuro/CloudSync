@@ -7,12 +7,12 @@ namespace CloudSyncModel
 {
     public class Store
     {
-        public virtual string ExternalSiteName { get; set; }
-
-        public virtual int AndromedaSiteId { get; set; }
-
-        public virtual string ExternalSiteId { get; set; }
-
-        public virtual string StoreStatus { get; set; }
+        public string ExternalSiteName { get; set; }
+        public int AndromedaSiteId { get; set; }
+        public string ExternalSiteId { get; set; }
+        public string StoreStatus { get; set; }
+        public string Telephone { get; set; }
+        public string TimeZone { get; set; }
+        public Address Address { get; set; }
     }
 }
