@@ -7,7 +7,6 @@ using CloudSyncModel.Menus;
 using CloudSyncModel.HostV2;
 using CloudSyncModel.StoreDeviceModels;
 
-
 namespace CloudSyncModel
 {
     [XmlRoot(ElementName = "CloudSync")]
@@ -25,6 +24,8 @@ namespace CloudSyncModel
 
             this.HostV2Models = new HostV2Models();
             this.StoreDeviceModels = new StoreDevicesModels();
+
+            this.LoyaltyUpdates = new Loyalty.LoyaltyUpdates();
         }
 
         public int FromDataVersion { get; set; }
@@ -33,6 +34,12 @@ namespace CloudSyncModel
         public List<Store> Stores { get; set; }
         public List<Partner> Partners { get; set; }
         public List<StorePaymentProvider> StorePaymentProviders { get; set; }
+
+        /// <summary>
+        /// Gets or sets the loyalty updates.
+        /// </summary>
+        /// <value>The loyalty updates.</value>
+        public Loyalty.LoyaltyUpdates LoyaltyUpdates { get; set; }
 
         /// <summary>
         /// Gets or sets the hub updates.
@@ -58,8 +65,16 @@ namespace CloudSyncModel
         /// <value>The store device models.</value>
         public StoreDevicesModels StoreDeviceModels { get; set; }
 
+        /// <summary>
+        /// Gets or sets the delivery areas.
+        /// </summary>
+        /// <value>The delivery areas.</value>
         public List<DeliveryArea> DeliveryAreas { get; set; }
 
+        /// <summary>
+        /// Gets or sets the post code sectors.
+        /// </summary>
+        /// <value>The post code sectors.</value>
         public List<PostCodeSector> PostCodeSectors { set; get; }
 
     }

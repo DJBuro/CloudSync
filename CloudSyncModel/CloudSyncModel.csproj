@@ -107,6 +107,8 @@
     <Compile Include="Hubs\HubHost.cs" />
     <Compile Include="Hubs\SiteHubReset.cs" />
     <Compile Include="Hubs\SiteHubs.cs" />
+    <Compile Include="Loyalty\LoyaltyUpdates.cs" />
+    <Compile Include="Loyalty\StoreLoyaltySyncModel.cs" />
     <Compile Include="Menus\StoreMenuUpdate.cs" />
     <Compile Include="Menus\StoreMenuUpdates.cs" />
     <Compile Include="StoreDeviceModels\StoreDevicesModels.cs" />

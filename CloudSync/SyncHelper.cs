@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using CloudSyncModel.HostV2;
 using CloudSync.Extensions;
 using CloudSyncModel.StoreDeviceModels;
+using Newtonsoft.Json;
 
 namespace CloudSync
 {
@@ -112,15 +113,44 @@ namespace CloudSync
             SyncHelper.AddInStoreDevices(syncModel, fromVersion);
             // Serialize the sync model to XML
 
-            ////add deliveryareas to sync model
+            ////add delivery areas to sync model
             //SyncHelper.AddDeliveryAreas(syncModel, fromVersion);
 
             //add postcodeSectors to sync model
             SyncHelper.AddPostCodeSectors(syncModel, fromVersion);
 
+            SyncHelper.AddLoyalty(syncModel, fromVersion);
+
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
+        }
+
+        private static void AddLoyalty(SyncModel syncModel, int fromVersion)
+        {
+            LoyaltyDataService loyaltyDataService = new LoyaltyDataService();
+
+            var storeLoyaltyRecords = loyaltyDataService.List(e => e.DataVersion > fromVersion);
+
+            if (!storeLoyaltyRecords.Any()) { return; }
+            syncModel.LoyaltyUpdates = new CloudSyncModel.Loyalty.LoyaltyUpdates();
+
+            var fillMe = syncModel.LoyaltyUpdates.AddOrUpdate ?? (syncModel.LoyaltyUpdates.AddOrUpdate = new List<CloudSyncModel.Loyalty.StoreLoyaltySyncModel>());
+            var deleteMe = syncModel.LoyaltyUpdates.TryToRemove ?? (syncModel.LoyaltyUpdates.TryToRemove = new List<Guid>());
+
+            foreach (var storeLoyalty in storeLoyaltyRecords) 
+            {
+                dynamic config = JsonConvert.DeserializeObject(storeLoyalty.Configuration ?? "{}");
+
+                if (config.Enabled != null && config.Enabled.Value)
+                {
+                    fillMe.Add(storeLoyalty.ToSyncModel());
+                }
+                else 
+                {
+                    deleteMe.Add(storeLoyalty.Id);
+                }
+            }
         }
 
         private static void AddPostCodeSectors(SyncModel syncModel, int fromVersion) 
