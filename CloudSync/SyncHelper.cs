@@ -82,7 +82,7 @@ namespace CloudSync
             //get the hub and site-hub data services 
             IHubDataService hubDataDao = AndroAdminDataAccessFactory.GetHubDAO();
             IStoreHubDataService storeHubDataDao = AndroAdminDataAccessFactory.GetSiteHubDAO();
-            IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDataService();
+            IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDAO();
 
             if (SyncHelper.ConnectionStringOverride != null)
             {
