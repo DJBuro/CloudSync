@@ -123,7 +123,7 @@ namespace CloudSyncTests
         private void FirstStore(string connectionString, StoreModel storeModel)
         {
             StoreController storeController = new StoreController();
-            storeController.ConnectionStringOverride = connectionString;
+            storeController.AndroAdminConnectionStringOverride = connectionString;
             
             // Add a first store
             ActionResult actionResult = storeController.Add(storeModel);
@@ -187,7 +187,7 @@ namespace CloudSyncTests
         private void SecondStore(string connectionString, StoreModel storeModel, StoreModel storeModel2)
         {
             StoreController storeController = new StoreController();
-            storeController.ConnectionStringOverride = connectionString;
+            storeController.AndroAdminConnectionStringOverride = connectionString;
 
             // Add a second store
             ActionResult actionResult = storeController.Add(storeModel2);
@@ -253,7 +253,7 @@ namespace CloudSyncTests
         private void FirstPartner(string connectionString, Partner partner)
         {
             PartnerController partnerController = new PartnerController();
-            partnerController.ConnectionStringOverride = connectionString;
+            partnerController.AndroAdminConnectionStringOverride = connectionString;
 
             // Add a partner
             ActionResult actionResult = partnerController.Add(partner);
@@ -293,7 +293,7 @@ namespace CloudSyncTests
         private void FirstPartnerApplication(string connectionString, ACSApplicationModel application)
         {
             PartnerController partnerController = new PartnerController();
-            partnerController.ConnectionStringOverride = connectionString;
+            partnerController.AndroAdminConnectionStringOverride = connectionString;
 
             // Add an application
             ActionResult actionResult = partnerController.AddApplication(application);
@@ -345,7 +345,7 @@ namespace CloudSyncTests
         private void FirstPartnerApplicationStore(string connectionString, ACSApplicationModel application)
         {
             PartnerController partnerController = new PartnerController();
-            partnerController.ConnectionStringOverride = connectionString;
+            partnerController.AndroAdminConnectionStringOverride = connectionString;
 
             // Add a store to the application
             ActionResult actionResult = partnerController.ApplicationStores(application);
@@ -399,7 +399,7 @@ namespace CloudSyncTests
         private void SecondPartnerApplicationStore(string connectionString, ACSApplicationModel application)
         {
             PartnerController partnerController = new PartnerController();
-            partnerController.ConnectionStringOverride = connectionString;
+            partnerController.AndroAdminConnectionStringOverride = connectionString;
 
             // Add a store to the application
             ActionResult actionResult = partnerController.ApplicationStores(application);
@@ -453,7 +453,7 @@ namespace CloudSyncTests
         private void RemoveFirstPartnerApplicationStore(string connectionString, ACSApplicationModel application)
         {
             PartnerController partnerController = new PartnerController();
-            partnerController.ConnectionStringOverride = connectionString;
+            partnerController.AndroAdminConnectionStringOverride = connectionString;
 
             // Remove the first store
             application.Stores[0].Selected = false;
