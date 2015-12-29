@@ -500,7 +500,7 @@ namespace CloudSync
             // Build the web service url for the ACS server
             string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
 
-            url = "http://localhost:49533/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
+            //url = "http://localhost:49533/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
 
             string responseXml = "";
 
