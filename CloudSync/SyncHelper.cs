@@ -84,6 +84,7 @@ namespace CloudSync
                     StoreStatus = store.StoreStatus.Status,
                     Phone = store.Telephone,
                     TimeZone = store.TimeZone,
+                    StorePaymentProviderId = store.PaymentProvider == null ? "" : store.PaymentProvider.Id.ToString(),
                     Address = new Address()
                     {
                         Id = store.Address.Id,
@@ -106,7 +107,7 @@ namespace CloudSync
                         DPS = store.Address.DPS,
                         Lat = store.Address.Lat,
                         Long = store.Address.Long,
-                        CountryId = store.Address.Country.Id,
+                        CountryId = store.Address.Country.Id
                     }
                 };
                 syncModel.Stores.Add(syncStore);
