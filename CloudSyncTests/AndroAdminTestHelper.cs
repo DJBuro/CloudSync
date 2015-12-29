@@ -82,9 +82,9 @@ namespace CloudSyncTests
                     AndromedaSiteId = andromedaSiteId,
                     Address = address,
                     CustomerSiteId = customerSiteId,
+                    CustomerSiteName = clientSiteName,
                     ExternalSiteId = externalSiteId,
                     ExternalSiteName = externalSiteName,
-                    ClientSiteName = clientSiteName,
                     LastFTPUploadDateTime = lastFTPUploadDateTime,
                     Name = name,
                     StoreStatus = storeStatus,
@@ -194,7 +194,7 @@ namespace CloudSyncTests
                     return "StoreController didn't return store " + expectedStoreModel.Store.AndromedaSiteId.ToString();
                 }
 
-                if (foundStore.ClientSiteName != expectedStoreModel.Store.ClientSiteName) return "ClientSiteName mismatch. Expected: " + expectedStoreModel.Store.ClientSiteName + " Got: " + foundStore.ClientSiteName;
+                if (foundStore.CustomerSiteName != expectedStoreModel.Store.CustomerSiteName) return "ClientSiteName mismatch. Expected: " + expectedStoreModel.Store.CustomerSiteName + " Got: " + foundStore.CustomerSiteName;
                 if (foundStore.ExternalSiteId != expectedStoreModel.Store.ExternalSiteId) return "ExternalSiteId mismatch. Expected: " + expectedStoreModel.Store.ExternalSiteId + " Got: " + foundStore.ExternalSiteId;
                 if (foundStore.ExternalSiteName != expectedStoreModel.Store.ExternalSiteName) return "ExternalSiteName mismatch. Expected: " + expectedStoreModel.Store.ExternalSiteName + " Got: " + foundStore.ExternalSiteName;
                 if (foundStore.Name != expectedStoreModel.Store.Name) return "Name mismatch. Expected: " + expectedStoreModel.Store.Name + " Got: " + foundStore.Name;
