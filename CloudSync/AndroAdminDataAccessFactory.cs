@@ -93,5 +93,6 @@ namespace CloudSync
             return new AndroAdminDataAccess.EntityFramework.DataAccess.StoreMenuThumbnailsDataService();
         }
 
+        public static 
     }
 }
