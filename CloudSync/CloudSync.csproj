@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AndroAdminDataAccessFactory.cs" />
+    <Compile Include="AndroAdminSyncHelper.cs" />
     <Compile Include="ErrorHelper.cs" />
     <Compile Include="Events\ISync.cs" />
     <Compile Include="Extensions\HostV2Models.cs" />
