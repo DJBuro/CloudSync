@@ -15,7 +15,7 @@ namespace CloudSyncTests
         public static string CreateTestAndroAdminDatabase()
         {
             // Create a unique database name.  We can automatically delete test databases as they all start AT_ (Automated Test)
-            string databaseName = "AT_" + Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", "");
+            string databaseName = "AT_AA_" + Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", "");
             string masterConnectionString = "Server=ROBDEVVM\\SQL2012;Database=master;Trusted_Connection=True;";
             string connectionString = "Server=ROBDEVVM\\SQL2012;Database=" + databaseName + ";Trusted_Connection=True;";
             string efConnectionString = "metadata=res://*/EntityFramework.EntityModel.csdl|res://*/EntityFramework.EntityModel.ssdl|res://*/EntityFramework.EntityModel.msl;provider=System.Data.SqlClient;provider connection string='data source=ROBDEVVM\\SQL2012;initial catalog=" + databaseName + ";persist security info=True;Trusted_Connection=True;multipleactiveresultsets=True;application name=EntityFramework'";
