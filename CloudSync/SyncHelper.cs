@@ -21,8 +21,9 @@ namespace CloudSync
         public static string ServerSync()
         {
             // Get the current data version
-            string toVersionString = "";
+            string toVersionString = string.Empty;
             AndroAdminDataAccessFactory.GetSettingsDAO().GetByName("DataVersion", out toVersionString);
+
             int toVersion = 0;
             if (!int.TryParse(toVersionString, out toVersion))
             {
@@ -32,7 +33,7 @@ namespace CloudSync
             // Get all the hosts
             IList<AndroAdminDataAccess.Domain.Host> hosts = AndroAdminDataAccessFactory.GetHostDAO().GetAll();
 
-            string errorMessage = "";
+            string errorMessage = string.Empty;
 
             foreach (AndroAdminDataAccess.Domain.Host host in hosts)
             {
@@ -43,7 +44,8 @@ namespace CloudSync
                 if (errorMessage.Length == 0)
                 {
                     // 2) Generate a block of XML that contains Add, Delete, Update objects that have changed on Cloud Master after the Cloud Servers version for:
-                    string syncXml = "";
+                    string syncXml = string.Empty;
+                    
                     errorMessage = SyncHelper.ExportSyncXml(fromVersion, toVersion, out syncXml);
                     if (errorMessage.Length != 0) return errorMessage;
 
@@ -69,75 +71,67 @@ namespace CloudSync
 
             // Get the store DAO
             IStoreDAO storeDAO = AndroAdminDataAccessFactory.GetStoreDAO();
-            if (SyncHelper.ConnectionStringOverride != null) storeDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
-
-            // Get all the stores that have changed since the last sync with this specific cloud server
-            List<AndroAdminDataAccess.Domain.Store> stores = (List<AndroAdminDataAccess.Domain.Store>)storeDAO.GetAfterDataVersion(fromVersion);
-            foreach (AndroAdminDataAccess.Domain.Store store in stores)
-            {
-                // Sync store opening times
-                List<TimeSpanBlock> openingHours = new List<TimeSpanBlock>();
-                if (store.OpeningHours != null)
-                {
-                    foreach (AndroAdminDataAccess.Domain.TimeSpanBlock timeSpanBlock in store.OpeningHours)
-                    {
-                        openingHours.Add
-                        (
-                            new TimeSpanBlock()
-                            {
-                                Day = timeSpanBlock.Day,
-                                EndTime = timeSpanBlock.EndTime,
-                                OpenAllDay = timeSpanBlock.OpenAllDay,
-                                StartTime = timeSpanBlock.StartTime
-                            }
-                        );
-                    }
-                }
-
-                // Add the store
-                Store syncStore = new Store()
-                {
-                    AndromedaSiteId = store.AndromedaSiteId,
-                    ExternalSiteId = store.ExternalSiteId,
-                    ExternalSiteName = store.ExternalSiteName,
-                    StoreStatus = store.StoreStatus.Status,
-                    Phone = store.Telephone,
-                    TimeZone = store.TimeZone,
-                    StorePaymentProviderId = store.PaymentProvider == null ? "" : store.PaymentProvider.Id.ToString(),
-                    Address = new Address()
-                    {
-                        Id = store.Address.Id,
-                        Org1 = store.Address.Org1,
-                        Org2 = store.Address.Org2,
-                        Org3 = store.Address.Org3,
-                        Prem1 = store.Address.Prem1,
-                        Prem2 = store.Address.Prem2,
-                        Prem3 = store.Address.Prem3,
-                        Prem4 = store.Address.Prem4,
-                        Prem5 = store.Address.Prem5,
-                        Prem6 = store.Address.Prem6,
-                        RoadNum = store.Address.RoadNum,
-                        RoadName = store.Address.RoadName,
-                        Locality = store.Address.Locality,
-                        Town = store.Address.Town,
-                        County = store.Address.County,
-                        State = store.Address.State,
-                        PostCode = store.Address.PostCode,
-                        DPS = store.Address.DPS,
-                        Lat = store.Address.Lat,
-                        Long = store.Address.Long,
-                        CountryId = store.Address.Country.Id
-                    },
-                    OpeningHours = openingHours
-                };
-
-                syncModel.Stores.Add(syncStore);
-            }
-
             // Get the partner DAO
             IPartnerDAO partnerDAO = AndroAdminDataAccessFactory.GetPartnerDAO();
-            if (SyncHelper.ConnectionStringOverride != null) partnerDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+            // Get the store payment provider DAO
+            IStorePaymentProviderDAO storePaymentProviderDAO = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
 
+            //get the hub and site-hub data services 
+            IHubDataService hubDataDAO = AndroAdminDataAccessFactory.GetHubDAO();
+            IStoreHubDataService storeHubDataDAO = AndroAdminDataAccessFactory.GetSiteHubDAO();
+
+            if (SyncHelper.ConnectionStringOverride != null)
+            {
+                storeDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                partnerDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                storePaymentProviderDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+            }
+
+            SyncHelper.AddInStoreUpdates(storeDAO, syncModel, fromVersion);
+
+            SyncHelper.AddInPartnerUpdates(partnerDAO, storeDAO, syncModel, fromVersion);
+
+            SyncHelper.AddInStorePaymentProviders(storePaymentProviderDAO, syncModel, fromVersion);
+
+            SyncHelper.AddInHubs(hubDataDAO, storeHubDataDAO, syncModel, fromVersion);
+
+            // Serialize the sync model to XML
+            syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
+
+            return string.Empty;
+        }
+  
+        private static void AddInHubs(IHubDataService hubDataDao, IStoreHubDataService storeHubDataDAO, SyncModel syncModel, int fromVersion)
+        {
+            var signalRHubs = hubDataDao.GetAfterDataVersion(fromVersion);
+
+            var removed = signalRHubs.Where(e => e.Removed);
+
+        }
+  
+        private static void AddInStorePaymentProviders(IStorePaymentProviderDAO storePaymentProviderDAO, SyncModel syncModel, int fromVersion)
+        {
+            syncModel.StorePaymentProviders = new List<StorePaymentProvider>();
+
+            var storePaymentProviders = storePaymentProviderDAO.GetAfterDataVersion(fromVersion);
+
+            foreach (AndroAdminDataAccess.Domain.StorePaymentProvider storePaymentProvider in storePaymentProviders)
+            {
+                StorePaymentProvider diffStorePaymentProvider = new StorePaymentProvider()
+                {
+                    Id = storePaymentProvider.Id,
+                    ClientId = storePaymentProvider.ClientId,
+                    ClientPassword = storePaymentProvider.ClientPassword,
+                    DisplayText = storePaymentProvider.DisplayText,
+                    ProviderName = storePaymentProvider.ProviderName
+                };
+
+                syncModel.StorePaymentProviders.Add(diffStorePaymentProvider);
+            }
+        }
+
+        private static void AddInPartnerUpdates(IPartnerDAO partnerDAO, IStoreDAO storeDAO, SyncModel syncModel, int fromVersion)
+        {
             // Get all the partners that have changed since the last sync with this specific cloud server
             List<AndroAdminDataAccess.Domain.Partner> partners = (List<AndroAdminDataAccess.Domain.Partner>)partnerDAO.GetAfterDataVersion(fromVersion);
             foreach (AndroAdminDataAccess.Domain.Partner partner in partners)
@@ -175,40 +169,82 @@ namespace CloudSync
                     foreach (AndroAdminDataAccess.Domain.Store store in acsApplicationStores)
                     {
                         if (siteIds.Length > 0) siteIds.Append(",");
- 
+
                         siteIds.Append(store.AndromedaSiteId.ToString());
                     }
 
                     syncApplication.Sites = siteIds.ToString();
                 }
             }
+        }
 
-            // Get the store payment provider DAO
-            IStorePaymentProviderDAO storePaymentProviderDAO = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
-            if (SyncHelper.ConnectionStringOverride != null) storePaymentProviderDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+        private static void AddInStoreUpdates(IStoreDAO storeDAO, SyncModel syncModel, int fromVersion)
+        {
+            
+            // Get all the stores that have changed since the last sync with this specific cloud server
+            var stores = storeDAO.GetAfterDataVersion(fromVersion);// as List<AndroAdminDataAccess.Domain.Store>;
 
-            syncModel.StorePaymentProviders = new List<StorePaymentProvider>();
-
-            // Get all the payment providers that have changed since the last sync with this specific cloud server
-            List<AndroAdminDataAccess.Domain.StorePaymentProvider> storePaymentProviders = (List<AndroAdminDataAccess.Domain.StorePaymentProvider>)storePaymentProviderDAO.GetAfterDataVersion(fromVersion);
-            foreach (AndroAdminDataAccess.Domain.StorePaymentProvider storePaymentProvider in storePaymentProviders)
+            foreach (AndroAdminDataAccess.Domain.Store store in stores)
             {
-                StorePaymentProvider diffStorePaymentProvider = new StorePaymentProvider()
+                // Sync store opening times
+                List<TimeSpanBlock> openingHours = new List<TimeSpanBlock>();
+                if (store.OpeningHours != null)
                 {
-                    Id = storePaymentProvider.Id,
-                    ClientId = storePaymentProvider.ClientId,
-                    ClientPassword = storePaymentProvider.ClientPassword,
-                    DisplayText = storePaymentProvider.DisplayText,
-                    ProviderName = storePaymentProvider.ProviderName
+                    foreach (AndroAdminDataAccess.Domain.TimeSpanBlock timeSpanBlock in store.OpeningHours)
+                    {
+                        openingHours.Add
+                        (
+                            new TimeSpanBlock()
+                            {
+                                Day = timeSpanBlock.Day,
+                                EndTime = timeSpanBlock.EndTime,
+                                OpenAllDay = timeSpanBlock.OpenAllDay,
+                                StartTime = timeSpanBlock.StartTime
+                            }
+                        );
+                    }
+                }
+
+                // Add the store
+                Store syncStore = new Store()
+                {
+                    AndromedaSiteId = store.AndromedaSiteId,
+                    ExternalSiteId = store.ExternalSiteId,
+                    ExternalSiteName = store.ExternalSiteName,
+                    StoreStatus = store.StoreStatus.Status,
+                    Phone = store.Telephone,
+                    TimeZone = store.TimeZone,
+                    StorePaymentProviderId = store.PaymentProvider == null ? string.Empty : store.PaymentProvider.Id.ToString(),
+                    Address = new Address()
+                    {
+                        Id = store.Address.Id,
+                        Org1 = store.Address.Org1,
+                        Org2 = store.Address.Org2,
+                        Org3 = store.Address.Org3,
+                        Prem1 = store.Address.Prem1,
+                        Prem2 = store.Address.Prem2,
+                        Prem3 = store.Address.Prem3,
+                        Prem4 = store.Address.Prem4,
+                        Prem5 = store.Address.Prem5,
+                        Prem6 = store.Address.Prem6,
+                        RoadNum = store.Address.RoadNum,
+                        RoadName = store.Address.RoadName,
+                        Locality = store.Address.Locality,
+                        Town = store.Address.Town,
+                        County = store.Address.County,
+                        State = store.Address.State,
+                        PostCode = store.Address.PostCode,
+                        DPS = store.Address.DPS,
+                        Lat = store.Address.Lat,
+                        Long = store.Address.Long,
+                        CountryId = store.Address.Country.Id
+                    },
+                    OpeningHours = openingHours
                 };
 
-                syncModel.StorePaymentProviders.Add(diffStorePaymentProvider);
+                syncModel.Stores.Add(syncStore);
             }
 
-            // Serialize the sync model to XML
-            syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
-
-            return "";
         }
 
         public static string ImportSyncXml(string syncXml)

@@ -16,7 +16,7 @@ namespace CloudSync
 
             ErrorHelper.LogError("DEBUG", "CloudSync.HttpHelper.RestGet: url=" + url, null);
 
-            xml = "";
+            xml = string.Empty;
 
             // Accept invalid SSL certs
             ServicePointManager.ServerCertificateValidationCallback = delegate
@@ -89,7 +89,7 @@ namespace CloudSync
         public static bool RestPut(string url, string xml, out string responseXml)
         {
             bool success = false;
-            responseXml = "";
+            responseXml = string.Empty;
 
             ErrorHelper.LogError("DEBUG", "CloudSync.HttpHelper.RestPut: url=" + url, null);
 

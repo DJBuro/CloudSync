@@ -8,6 +8,8 @@ namespace CloudSync
 {
     public class AndroAdminDataAccessFactory
     {
+        
+
         public static IAMSServerDAO GetAMSServerDAO()
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.AMSServerDAO();
@@ -71,6 +73,18 @@ namespace CloudSync
         public static IStorePaymentProviderDAO GetStorePaymentProviderDAO()
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.StorePaymentProviderDAO();
+        }
+
+        public static IHubDataService GetHubDAO() 
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HubDataService();
+        }
+
+
+        public static IStoreHubDataService GetSiteHubDAO()
+        {
+            // TODO: Implement this method
+            throw new NotImplementedException();
         }
     }
 }
