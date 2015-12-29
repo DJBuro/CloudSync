@@ -399,7 +399,7 @@ namespace CloudSync
             string responseXml = "";
 
             // Call the web service on the ACS server
-            if (!HttpHelper.RestPut(url, syncXml, out responseXml))
+            if (!HttpHelper.RestPut(url, syncXml, null, out responseXml))
             {
                 return "Error connecting to " + url;
             }
