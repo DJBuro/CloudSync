@@ -42,6 +42,9 @@ namespace CloudSync
                 int fromVersion = 0;
                 errorMessage = SyncHelper.GetAcsServerDataVersion(host, out fromVersion);
 
+                //todo make the response ienumerable
+                //yield errorMessage
+
                 if (errorMessage.Length == 0)
                 {
                     // 2) Generate a block of XML that contains Add, Delete, Update objects that have changed on Cloud Master after the Cloud Servers version for:
@@ -100,6 +103,7 @@ namespace CloudSync
 
             IStoreMenuThumbnailsDataService storeMenuThumbnailsDataService = AndroAdminDataAccessFactory.GetStoreMenuThumbnailDAO();
             SyncHelper.AddinMenuUpdates(storeMenuThumbnailsDataService, syncModel, fromVersion);
+            
             // Serialize the sync model to XML
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
