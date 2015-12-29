@@ -88,5 +88,10 @@ namespace CloudSync
             return new AndroAdminDataAccess.EntityFramework.DataAccess.HubDataService();
         }
 
+        public static IStoreMenuThumbnailsDataService GetStoreMenuThumbnailDAO() 
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.StoreMenuThumbnailsDataService();
+        }
+
     }
 }
