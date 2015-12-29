@@ -138,7 +138,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(0, 1, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(0, 1, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml =
@@ -204,7 +204,7 @@ namespace CloudSyncTests
             // Export to XML
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(1, 2, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(1, 2, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
@@ -269,7 +269,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(2, 3, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(2, 3, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
@@ -314,7 +314,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(3, 4, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(3, 4, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
@@ -366,7 +366,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(4, 5, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(4, 5, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
@@ -420,7 +420,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(5, 6, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(5, 6, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
@@ -477,7 +477,7 @@ namespace CloudSyncTests
 
             SyncHelper.ConnectionStringOverride = connectionString;
             string xml = "";
-            string errorMessage = SyncHelper.ExportSyncXml(6, 7, out xml);
+            string errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(6, 7, out xml);
             Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =

@@ -45,7 +45,7 @@ namespace CloudSync
             {
                 // 1) Ask the server for it's current data version
                 int fromVersion = 0;
-                errorMessage = SyncHelper.GetAcsServerDataVersion(host, out fromVersion);
+                errorMessage = AcsSyncHelper.GetAcsServerDataVersion(host, out fromVersion);
 
                 //todo make the response enumerable
                 //yield errorMessage
@@ -55,11 +55,11 @@ namespace CloudSync
                     // 2) Generate a block of XML that contains Add, Delete, Update objects that have changed on Cloud Master after the Cloud Servers version for:
                     string syncXml = string.Empty;
 
-                    errorMessage = SyncHelper.ExportSyncXml(fromVersion, toVersion, out syncXml);
+                    errorMessage = AndroAdminSyncHelper.TryGetExportSyncXml(fromVersion, toVersion, out syncXml);
                     if (errorMessage.Length != 0) return errorMessage;
 
                     // 3) Send sync XML to Cloud Server.  Cloud server returns a list of logs and audit data which have occurred since the last update.
-                    errorMessage = SyncHelper.SyncAcsServer(host, syncXml);
+                    errorMessage = AcsSyncHelper.SyncAcsServer(host, syncXml);
                     if (errorMessage.Length != 0) return errorMessage;
 
                     // 4) Insert logs/audit data into Cloud Master.
@@ -71,7 +71,13 @@ namespace CloudSync
             return errorMessage;
         }
 
-        public static string ExportSyncXml(int fromVersion, int masterVersion, out string syncXml)
+        
+        
+    }
+
+    public static class AndroAdminSyncHelper 
+    {
+        public static string TryGetExportSyncXml(int fromVersion, int masterVersion, out string syncXml)
         {
             SyncModel syncModel = new SyncModel();
 
@@ -96,30 +102,30 @@ namespace CloudSync
                 storePaymentProviderDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
             }
 
-            SyncHelper.AddInStoreUpdates(storeDao, syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInStoreUpdates(storeDao, syncModel, fromVersion);
 
-            SyncHelper.AddInPartnerUpdates(partnerDao, storeDao, syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInPartnerUpdates(partnerDao, storeDao, syncModel, fromVersion);
 
-            SyncHelper.AddInStorePaymentProviders(storePaymentProviderDao, syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInStorePaymentProviders(storePaymentProviderDao, syncModel, fromVersion);
 
-            SyncHelper.AddInHubTasks(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInHubTasks(syncModel, fromVersion);
 
             //Menu updates as pushed on by MyAndromeda.
-            SyncHelper.AddinMenuUpdates(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddinMenuUpdates(syncModel, fromVersion);
 
             //Host V2 changes 
-            SyncHelper.AddInHostV2List(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInHostV2List(syncModel, fromVersion);
 
-            SyncHelper.AddInStoreDevices(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddInStoreDevices(syncModel, fromVersion);
             // Serialize the sync model to XML
 
             ////add delivery areas to sync model
-            //SyncHelper.AddDeliveryAreas(syncModel, fromVersion);
+            //AndroAdminSyncHelper.AddDeliveryAreas(syncModel, fromVersion);
 
             //add postcodeSectors to sync model
-            SyncHelper.AddPostCodeSectors(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddPostCodeSectors(syncModel, fromVersion);
 
-            SyncHelper.AddLoyalty(syncModel, fromVersion);
+            AndroAdminSyncHelper.AddLoyalty(syncModel, fromVersion);
 
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
@@ -138,7 +144,7 @@ namespace CloudSync
             var fillMe = syncModel.LoyaltyUpdates.AddOrUpdate ?? (syncModel.LoyaltyUpdates.AddOrUpdate = new List<CloudSyncModel.Loyalty.StoreLoyaltySyncModel>());
             var deleteMe = syncModel.LoyaltyUpdates.TryToRemove ?? (syncModel.LoyaltyUpdates.TryToRemove = new List<Guid>());
 
-            foreach (var storeLoyalty in storeLoyaltyRecords) 
+            foreach (var storeLoyalty in storeLoyaltyRecords)
             {
                 dynamic config = JsonConvert.DeserializeObject(storeLoyalty.Configuration ?? "{}");
 
@@ -146,14 +152,14 @@ namespace CloudSync
                 {
                     fillMe.Add(storeLoyalty.ToSyncModel());
                 }
-                else 
+                else
                 {
                     deleteMe.Add(storeLoyalty.Id);
                 }
             }
         }
 
-        private static void AddPostCodeSectors(SyncModel syncModel, int fromVersion) 
+        private static void AddPostCodeSectors(SyncModel syncModel, int fromVersion)
         {
             DeliveryAreaDataService deliveryAreaDataService = new DeliveryAreaDataService();
             var postCodeSectors = deliveryAreaDataService.GetListPostCodes(e => e.DataVersion > fromVersion).ToList();
@@ -161,7 +167,7 @@ namespace CloudSync
             var model = syncModel.PostCodeSectors ?? (syncModel.PostCodeSectors = new List<PostCodeSector>());
 
             foreach (var postcode in postCodeSectors)
-            { 
+            {
                 CloudSyncModel.PostCodeSector postCodeSector = new CloudSyncModel.PostCodeSector
                 {
                     DeliveryZoneId = postcode.DeliveryZoneId,
@@ -171,23 +177,24 @@ namespace CloudSync
                     StoreId = new Guid(postcode.DeliveryZoneName.Store.ExternalId)
                 };
                 syncModel.PostCodeSectors.Add(postCodeSector);
-            }            
+            }
         }
 
         //This method will be deleted
-        private static void AddDeliveryAreas(SyncModel syncModel, int fromVersion) {
+        private static void AddDeliveryAreas(SyncModel syncModel, int fromVersion)
+        {
             DeliveryAreaDataService deliveryAreaDataService = new DeliveryAreaDataService();
             var deliveryAreas = deliveryAreaDataService.List(e => e.DataVersion > fromVersion).ToList();
-             
-            var model = syncModel.DeliveryAreas ?? (syncModel.DeliveryAreas = new List<DeliveryArea>());            
-            
-            foreach (var delArea in deliveryAreas) 
+
+            var model = syncModel.DeliveryAreas ?? (syncModel.DeliveryAreas = new List<DeliveryArea>());
+
+            foreach (var delArea in deliveryAreas)
             {
                 CloudSyncModel.DeliveryArea deliveryArea = new CloudSyncModel.DeliveryArea
                 {
                     DeliveryArea1 = delArea.DeliveryArea1,
                     Removed = delArea.Removed,
-                    Store = new Store { ExternalSiteId = delArea.Store.ExternalId}                    
+                    Store = new Store { ExternalSiteId = delArea.Store.ExternalId }
                 };
                 syncModel.DeliveryAreas.Add(deliveryArea);
             }
@@ -200,16 +207,17 @@ namespace CloudSync
             IDevicesDataService devicesDataService = new DevicesDataService();
             IExternalApiDataService externalApiDataService = new ExternalApiDataService();
 
-            var externalApis = externalApiDataService.List(e => e.DataVersion > fromVersion);
-            var devices = devicesDataService.List(e => e.DataVersion > fromVersion);
-            var storeDevices = storeDevicesDataService.List(e => e.DataVersion > fromVersion);
+            var updatedExternalApis = externalApiDataService.List(e => e.DataVersion > fromVersion);
+            var updatedDevices = devicesDataService.List(e => e.DataVersion > fromVersion);
+            var updatedStoreDevices = storeDevicesDataService.List(e => e.DataVersion > fromVersion);
 
             var model = syncModel.StoreDeviceModels ?? (syncModel.StoreDeviceModels = new StoreDevicesModels());
 
             //add or update
-            model.ExternalApis = externalApis.Select(e => e.ToSyncModel()).ToList();
-            model.Devices = devices.Select(e => e.ToSyncModel()).ToList();
-            model.SiteDevices = storeDevices.Select(e => e.ToSyncModel()).ToList();
+            model.ExternalApis = updatedExternalApis.Select(e => e.ToSyncModel()).ToList();
+            model.Devices = updatedDevices.Select(e => e.ToSyncModel()).ToList();
+            model.SiteDevices = new List<SiteDeviceScaffold>();
+            //model.SiteDevices = storeDevices.Select(e => e.ToSyncModel()).ToList();
 
             //models to remove
             model.RemovedExternalApis = externalApiDataService
@@ -220,10 +228,27 @@ namespace CloudSync
                 .ListRemoved(e => e.DataVersion > fromVersion)
                 .Select(e => e.ToSyncModel())
                 .ToList();
-            model.RemovedSiteDevices = storeDevicesDataService
-                .ListRemoved(e => e.DataVersion > fromVersion)
-                .Select(e => e.ToSyncModel())
-                .ToList();
+
+            model.RemovedSiteDevices = new List<SiteDeviceScaffold>();
+            //model.RemovedSiteDevices = storeDevicesDataService
+            //    .ListRemoved(e => e.DataVersion > fromVersion)
+            //    .Select(e => e.ToSyncModel())
+            //    .ToList();
+
+            //oddity if there is ever more than one device, and that store device is changed. 
+            foreach (var deviceGroup in updatedStoreDevices.GroupBy(e => e.StoreId))
+            {
+                //ignore the above, just interested in the stores as we are going to send all of them up. 
+                var storeDevices = storeDevicesDataService.List(e => e.StoreId == deviceGroup.Key).ToList();
+
+                //remove all of them on ACS as its impossible to tell which item has switched on device changes. 
+                var remove = storeDevices.Select(e => e.ToSyncModel()).ToArray();
+                var addOrUpdate = storeDevices.Where(e => !e.Removed).Select(e => e.ToSyncModel()).ToArray();
+
+                //add to the export feed. 
+                model.RemovedSiteDevices.AddRange(remove);
+                model.SiteDevices.AddRange(addOrUpdate);
+            }
             //all done. 
         }
 
@@ -278,11 +303,11 @@ namespace CloudSync
             syncModel.HubUpdates = new CloudSyncModel.Hubs.HubUpdates()
             {
                 ActiveHubList = activeHubs.Select(e => new CloudSyncModel.Hubs.HubHostModel()
-                    {
-                        Id = e.Id,
-                        Url = e.Address,
-                        SiteHubs = storeHubDataDao.GetSitesUsingHub(e.Id).Select(s => new CloudSyncModel.Hubs.SiteHubs() { HubId = e.Id, ExternalId = s.StoreExternalId }).ToList()
-                    }).ToList(),
+                {
+                    Id = e.Id,
+                    Url = e.Address,
+                    SiteHubs = storeHubDataDao.GetSitesUsingHub(e.Id).Select(s => new CloudSyncModel.Hubs.SiteHubs() { HubId = e.Id, ExternalId = s.StoreExternalId }).ToList()
+                }).ToList(),
                 InActiveHubList = inactiveHubs.Select(e => new CloudSyncModel.Hubs.HubHostModel()
                 {
                     Id = e.Id,
@@ -473,14 +498,15 @@ namespace CloudSync
 
             }
 
-            foreach(var store in etdStores)
+            foreach (var store in etdStores)
             {
-                if (syncModel.StoreEdt == null) 
+                if (syncModel.StoreEdt == null)
                 {
                     syncModel.StoreEdt = new List<StoreEdt>();
                 }
 
-                syncModel.StoreEdt.Add(new StoreEdt() { 
+                syncModel.StoreEdt.Add(new StoreEdt()
+                {
                     AndromedaSiteId = store.AndromedaSiteId,
                     EstimatedTimeForDelivery = store.EstimatedDeliveryTime.GetValueOrDefault(45)
                 });
@@ -488,74 +514,5 @@ namespace CloudSync
 
         }
 
-        public static string ImportSyncXml(string syncXml, Action<string> successMessages = null, Action<string> failureMessages = null)
-        {
-            SyncModel syncModel = new SyncModel();
-
-            string errorMessage = SerializeHelper.Deserialize<SyncModel>(syncXml, out syncModel);
-
-            if (errorMessage.Length == 0)
-            {
-                // Import the sync XML
-                ISyncDataAccess syncDataAccess = new SyncDataAccess();
-                if (SyncHelper.ConnectionStringOverride != null) syncDataAccess.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
-
-                return syncDataAccess.Sync(syncModel, successMessages, failureMessages);
-            }
-
-            return errorMessage;
-        }
-
-        public static string GetAcsServerDataVersion(AndroAdminDataAccess.Domain.Host host, out int acsServerDataVersion)
-        {
-            acsServerDataVersion = 0;
-
-            // Build the web service url for the ACS server
-            string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
-
-            string responseXml = "";
-
-            // Call the web service on the ACS server
-            if (!HttpHelper.RestGet(url, out responseXml))
-            {
-                return "Error connecting to " + url;
-            }
-
-            // Extract the data version from the xml returned by the ACS server
-            XElement xElement = XElement.Parse(responseXml);
-
-            // Is there a data version on the xml?
-            string dataVersionString = xElement.Element("Version").Value;
-            if (dataVersionString == null || dataVersionString.Length == 0)
-            {
-                return "Data version missing from ACS Server web service xml: " + url + " " + responseXml;
-            }
-
-            // Is the data version a number?
-            if (!int.TryParse(dataVersionString, out acsServerDataVersion))
-            {
-                return "Invalid version data returned from ACS Server web service xml: " + url + " " + responseXml;
-            }
-
-            return "";
-        }
-
-        public static string SyncAcsServer(AndroAdminDataAccess.Domain.Host host, string syncXml)
-        {
-            // Build the web service url for the ACS server
-            string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
-
-            //url = "http://localhost/AndroCloudPrivateWCFServices/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
-
-            string responseXml = "";
-
-            // Call the web service on the ACS server
-            if (!HttpHelper.RestPut(url, syncXml, null, out responseXml))
-            {
-                return "Error connecting to " + url;
-            }
-
-            return "";
-        }
     }
 }
