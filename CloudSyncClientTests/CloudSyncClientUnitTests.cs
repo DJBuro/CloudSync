@@ -190,7 +190,7 @@ namespace CloudSyncClientTests
                 "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             Assert.AreEqual<string>(
                 expectedSiteListXml,
@@ -304,7 +304,7 @@ namespace CloudSyncClientTests
                 "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             Assert.AreEqual<string>(
                 expectedSiteListXml,
@@ -401,7 +401,7 @@ namespace CloudSyncClientTests
                 "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationid", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             Assert.AreEqual<string>(
                 expectedSiteListXml,
@@ -497,7 +497,7 @@ namespace CloudSyncClientTests
                 "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             Assert.AreEqual<string>(
                 expectedSiteListXml,
@@ -661,7 +661,7 @@ namespace CloudSyncClientTests
             //    "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             // Parse the sites xml
             XElement xElement = XElement.Parse(siteListResponse.ResponseText);
@@ -861,7 +861,7 @@ namespace CloudSyncClientTests
             //    "</Sites>";
 
             // Get the site list
-            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
+            Response siteListResponse = SiteService.Get("TestExternalApplicationidAAA", "", "", "", null, AndroCloudHelper.DataTypeEnum.XML, dataAccess, out sourceId);
 
             // Parse the sites xml
             XElement xElement = XElement.Parse(siteListResponse.ResponseText);
