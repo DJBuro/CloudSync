@@ -31,8 +31,10 @@ namespace CloudSyncTests
             Country country = null;
             StoreStatus storeStatus = null;
 
-            using (AndroAdminDataAccess.EntityFramework.AndroAdminEntities entitiesContext = new AndroAdminDataAccess.EntityFramework.AndroAdminEntities(connectionString))
+            using (AndroAdminDataAccess.EntityFramework.AndroAdminEntities entitiesContext = new AndroAdminDataAccess.EntityFramework.AndroAdminEntities())
             {
+                entitiesContext.Database.Connection.ConnectionString = connectionString;
+
                 // Get a country for our test store
                 var countryQuery = from s in entitiesContext.Countries
                             where s.CountryName == countryName
