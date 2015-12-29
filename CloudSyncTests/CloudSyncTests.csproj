@@ -38,6 +38,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'test1|AnyCPU'">
+    <OutputPath>bin\test1\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>..\..\WebSites\AndroAdmin\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
