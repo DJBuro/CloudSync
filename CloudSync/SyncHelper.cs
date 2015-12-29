@@ -124,6 +124,7 @@ namespace CloudSync
                     // Add the application
                     Application syncApplication = new Application()
                     {
+                        Id = acsApplication.Id,
                         ExternalApplicationId = acsApplication.ExternalApplicationId,
                         Name = acsApplication.Name
                     };

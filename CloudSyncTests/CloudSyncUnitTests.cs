@@ -32,7 +32,7 @@ namespace CloudSyncTests
                 "TestName",
                 "1234567890",
                 "GMT",
-                new Address() 
+                new Address()
                 {
                     Org1 = "Test1_Org1",
                     Org2  = "Test1_Org2",
@@ -51,8 +51,8 @@ namespace CloudSyncTests
                     State = "Test1_State",
                     PostCode = "Test1_PostCode",
                     DPS = "DPS1",
-                    Lat = 1.2f,
-                    Long = 3.4f
+                    Lat = "1.2",
+                    Long = "3.4"
                 }
             );
 
@@ -88,8 +88,8 @@ namespace CloudSyncTests
                     State = "Test2_State",
                     PostCode = "Test2_PostCode",
                     DPS = "DPS2",
-                    Lat = 1.2f,
-                    Long = 3.4f
+                    Lat = "1.2",
+                    Long = "3.4"
                 }
             );
 
@@ -137,7 +137,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(0, 1);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(0, 1, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml =
                 "<CloudSync>" +
@@ -149,7 +151,7 @@ namespace CloudSyncTests
                             "<AndromedaSiteId>123</AndromedaSiteId>" +
                             "<ExternalSiteId>TestExternalSiteId</ExternalSiteId>" +
                             "<StoreStatus>Live</StoreStatus>" +
-                            "<Telephone>1234567890</Telephone>" +
+                            "<Phone>1234567890</Phone>" +
                             "<TimeZone>GMT</TimeZone>" +
                             "<Address>" +
                                 "<Id>1</Id>" +
@@ -170,8 +172,8 @@ namespace CloudSyncTests
                                 "<State>Test1_State</State>" +
                                 "<PostCode>Test1_PostCode</PostCode>" +
                                 "<DPS>DPS1</DPS>" +
-                                "<Lat>1.2000000476837158</Lat>" +
-                                "<Long>3.4000000953674316</Long>" +
+                                "<Lat>1.2</Lat>" +
+                                "<Long>3.4</Long>" +
                                 "<CountryId>234</CountryId>" +
                             "</Address>" +
                         "</Store>" +
@@ -201,7 +203,9 @@ namespace CloudSyncTests
 
             // Export to XML
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(1, 2);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(1, 2, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -213,7 +217,7 @@ namespace CloudSyncTests
                             "<AndromedaSiteId>321</AndromedaSiteId>" +
                             "<ExternalSiteId>TestExternalSiteId2</ExternalSiteId>" +
                             "<StoreStatus>Live</StoreStatus>" +
-                            "<Telephone>0987654321</Telephone>" +
+                            "<Phone>0987654321</Phone>" +
                             "<TimeZone>GMT</TimeZone>" +
                             "<Address>" +
                                 "<Id>2</Id>" +
@@ -234,8 +238,8 @@ namespace CloudSyncTests
                                 "<State>Test2_State</State>" +
                                 "<PostCode>Test2_PostCode</PostCode>" +
                                 "<DPS>DPS2</DPS>" +
-                                "<Lat>1.2000000476837158</Lat>" +
-                                "<Long>3.4000000953674316</Long>" +
+                                "<Lat>1.2</Lat>" +
+                                "<Long>3.4</Long>" +
                                 "<CountryId>234</CountryId>" +
                             "</Address>" +
                         "</Store>" +
@@ -264,7 +268,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(2, 3);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(2, 3, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -307,7 +313,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(3, 4);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(3, 4, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -321,6 +329,7 @@ namespace CloudSyncTests
                             "<ExternalId>testpartner1</ExternalId>" +
                             "<Applications>" +
                                 "<Application>" +
+                                    "<Id>1</Id>" +
                                     "<ExternalApplicationId>TestExternalApplicationid</ExternalApplicationId>" +
                                     "<Name>TestName</Name>" +
                                     "<Sites />" +
@@ -356,7 +365,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(4, 5);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(4, 5, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -370,6 +381,7 @@ namespace CloudSyncTests
                             "<ExternalId>testpartner1</ExternalId>" +
                             "<Applications>" +
                                 "<Application>" +
+                                    "<Id>1</Id>" +
                                     "<ExternalApplicationId>TestExternalApplicationid</ExternalApplicationId>" +
                                     "<Name>TestName</Name>" +
                                     "<Sites>" +
@@ -407,7 +419,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(5, 6);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(5, 6, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -421,6 +435,7 @@ namespace CloudSyncTests
                             "<ExternalId>testpartner1</ExternalId>" +
                             "<Applications>" +
                                 "<Application>" +
+                                    "<Id>1</Id>" +
                                     "<ExternalApplicationId>TestExternalApplicationid</ExternalApplicationId>" +
                                     "<Name>TestName</Name>" +
                                     "<Sites>" +
@@ -461,7 +476,9 @@ namespace CloudSyncTests
             if (error.Length > 0) { Assert.Fail(error); }
 
             SyncHelper.ConnectionStringOverride = connectionString;
-            string xml = SyncHelper.ExportSyncXml(6, 7);
+            string xml = "";
+            string errorMessage = SyncHelper.ExportSyncXml(6, 7, out xml);
+            Assert.AreEqual<string>("", errorMessage);
 
             string expectedXml2 =
                 "<CloudSync>" +
@@ -475,6 +492,7 @@ namespace CloudSyncTests
                             "<ExternalId>testpartner1</ExternalId>" +
                             "<Applications>" +
                                 "<Application>" +
+                                    "<Id>1</Id>" +
                                     "<ExternalApplicationId>TestExternalApplicationid</ExternalApplicationId>" +
                                     "<Name>TestName</Name>" +
                                     "<Sites>" +
