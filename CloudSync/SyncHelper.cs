@@ -1,4 +1,5 @@
 ﻿using AndroAdminDataAccess.DataAccess;
+using AndroAdminDataAccess.EntityFramework.DataAccess;
 using AndroCloudDataAccess.DataAccess;
 using AndroCloudDataAccessEntityFramework.DataAccess;
 using CloudSyncModel;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Xml.Linq;
 using CloudSyncModel.HostV2;
 using CloudSync.Extensions;
+using CloudSyncModel.StoreDeviceModels;
 
 namespace CloudSync
 {
@@ -106,11 +108,46 @@ namespace CloudSync
 
             //Host V2 changes 
             SyncHelper.AddInHostV2List(syncModel, fromVersion);
+
+            SyncHelper.AddInStoreDevices(syncModel, fromVersion);
             // Serialize the sync model to XML
 
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
+        }
+ 
+        private static void AddInStoreDevices(SyncModel syncModel, int fromVersion)
+        {
+            IStoreDevicesDataService storeDevicesDataService = new StoreDevicesDataService();
+            IDevicesDataService devicesDataService = new DevicesDataService();
+            IExternalApiDataService externalApiDataService = new ExternalApiDataService();
+
+            var externalApis = externalApiDataService.List(e => e.DataVersion > fromVersion);
+            var devices = devicesDataService.List(e => e.DataVersion > fromVersion);
+            var storeDevices = storeDevicesDataService.List(e => e.DataVersion > fromVersion);
+
+            var model = syncModel.StoreDeviceModels ?? (syncModel.StoreDeviceModels = new StoreDevicesModels());
+            
+            //add or update
+            model.ExternalApis = externalApis.Select(e => e.ToSyncModel()).ToList();
+            model.Devices = devices.Select(e => e.ToSyncModel()).ToList();
+            model.SiteDevices = storeDevices.Select(e => e.ToSyncModel()).ToList();
+            
+            //models to remove
+            model.RemovedExternalApis = externalApiDataService
+                .ListRemoved(e => e.DataVersion > fromVersion)
+                .Select(e=> e.ToSyncModel())
+                .ToList();
+            model.RemovedDevices = devicesDataService
+                .ListRemoved(e => e.DataVersion > fromVersion)
+                .Select(e => e.ToSyncModel())
+                .ToList();
+            model.RemovedSiteDevices = storeDevicesDataService
+                .ListRemoved(e => e.DataVersion > fromVersion)
+                .Select(e => e.ToSyncModel())
+                .ToList();
+            //all done. 
         }
 
         private static void AddInHostV2List(

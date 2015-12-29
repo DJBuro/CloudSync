@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using CloudSyncModel.Hubs;
 using CloudSyncModel.Menus;
 using CloudSyncModel.HostV2;
+using CloudSyncModel.StoreDeviceModels;
 
 namespace CloudSyncModel
 {
@@ -22,6 +23,7 @@ namespace CloudSyncModel
             this.MenuUpdates = new StoreMenuUpdates();
 
             this.HostV2Models = new HostV2Models();
+            this.StoreDeviceModels = new StoreDevicesModels();
         }
 
         public int FromDataVersion { get; set; }
@@ -48,7 +50,11 @@ namespace CloudSyncModel
         /// </summary>
         /// <value>The host v2 models.</value>
         public HostV2Models HostV2Models { get; set; }
-    }
 
-    
+        /// <summary>
+        /// Gets or sets the store device models.
+        /// </summary>
+        /// <value>The store device models.</value>
+        public StoreDevicesModels StoreDeviceModels { get; set; }
+    }
 }
