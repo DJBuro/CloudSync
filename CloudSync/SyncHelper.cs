@@ -17,10 +17,12 @@ namespace CloudSync
         /// <summary>
         /// Must be called from the Cloud Master.  Syncs Cloud master with all cloud servers
         /// </summary>
-        public static void ServerSync()
+        public static string ServerSync()
         {
             // Get all the hosts
             IList<AndroAdminDataAccess.Domain.Host> hosts = AndroAdminDataAccessFactory.GetHostDAO().GetAll();
+
+            string errorMessage = "";
 
             foreach (AndroAdminDataAccess.Domain.Host host in hosts)
             {
@@ -29,15 +31,19 @@ namespace CloudSync
                 int toVersion = 18; // Test fudge
 
                 // 2) Generate a block of XML that contains Add, Delete, Update objects that have changed on Cloud Master after the Cloud Servers version for:
-                string syncXml = SyncHelper.ExportSyncXml(fromVersion, toVersion);
+                string syncXml = "";
+
+                errorMessage = SyncHelper.ExportSyncXml(fromVersion, toVersion, out syncXml);
 
                 // 3) Send sync XML to Cloud Server.  Cloud server returns a list of logs and audit data which have occurred since the last update.
 
                 // 4) Insert logs/audit data into Cloud Master.
             }
+
+            return errorMessage;
         }
 
-        public static string ExportSyncXml(int fromVersion, int masterVersion)
+        public static string ExportSyncXml(int fromVersion, int masterVersion, out string syncXml)
         {
             SyncModel syncModel = new SyncModel();
 
@@ -60,7 +66,7 @@ namespace CloudSync
                     ExternalSiteId = store.ExternalSiteId,
                     ExternalSiteName = store.ExternalSiteName,
                     StoreStatus = store.StoreStatus.Status,
-                    Telephone = store.Telephone,
+                    Phone = store.Telephone,
                     TimeZone = store.TimeZone,
                     Address = new Address()
                     {
@@ -137,10 +143,13 @@ namespace CloudSync
                 }
             }
 
-            return SerializeHelper.Serialize<SyncModel>(syncModel);
+            // Serialize the sync model to XML
+            syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
+
+            return "";
         }
 
-        public static void ImportSyncXml(string syncXml)
+        public static string ImportSyncXml(string syncXml)
         {
             SyncModel syncModel = new SyncModel();
 
@@ -148,12 +157,14 @@ namespace CloudSync
 
             if (errorMessage.Length == 0)
             {
-                // Does the store already exist?
+                // Import the sync XML
                 ISyncDataAccess syncDataAccess = new SyncDataAccess();
                 if (SyncHelper.ConnectionStringOverride != null) syncDataAccess.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
 
-                syncDataAccess.Sync(syncModel);
+                return syncDataAccess.Sync(syncModel);
             }
+
+            return errorMessage;
         }
     }
 }
