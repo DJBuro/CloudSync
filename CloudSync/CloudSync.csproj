@@ -96,6 +96,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml.Linq" />
@@ -114,6 +115,7 @@
     <Compile Include="ImportSyncHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializerHelper.cs" />
+    <Compile Include="SignpostSyncHelper.cs" />
     <Compile Include="SyncHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +130,10 @@
     <ProjectReference Include="..\..\DataAccess\AndroCloudDataAccess\AndroCloudDataAccess.csproj">
       <Project>{408fba0e-e649-493e-b4d4-8a5328265450}</Project>
       <Name>AndroCloudDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\AndroCloudServices\AndroCloudWCFHelper\AndroCloudHelper.csproj">
+      <Project>{d9959d2f-2016-4355-bc22-061ea8a5e267}</Project>
+      <Name>AndroCloudHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\CloudSyncModel\CloudSyncModel.csproj">
       <Project>{56aa880a-eff0-440f-92f5-39f2c578cbdd}</Project>
