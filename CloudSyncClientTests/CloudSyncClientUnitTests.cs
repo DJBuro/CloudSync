@@ -79,7 +79,7 @@ namespace CloudSyncClientTests
                     "<Partners />" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             // Get the store (we need the id)
@@ -115,7 +115,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
         }
 
@@ -143,7 +143,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
         }
 
@@ -171,7 +171,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             IDataAccessFactory dataAccess = new EntityFrameworkDataAccessFactory() { ConnectionStringOverride = connectionString };
@@ -285,7 +285,7 @@ namespace CloudSyncClientTests
                     "<Partners />" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             IDataAccessFactory dataAccess = new EntityFrameworkDataAccessFactory() { ConnectionStringOverride = connectionString };
@@ -381,7 +381,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
             
             // At the moment there is no way to test that this has worked - we can just test that the correct sites are returned for the application id
@@ -478,7 +478,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             IDataAccessFactory dataAccess = new EntityFrameworkDataAccessFactory() { ConnectionStringOverride = connectionString };
@@ -592,7 +592,7 @@ namespace CloudSyncClientTests
                     "<Partners />" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             // Get the store (we need the id)
@@ -635,7 +635,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             IDataAccessFactory dataAccess = new EntityFrameworkDataAccessFactory() { ConnectionStringOverride = connectionString };
@@ -842,7 +842,7 @@ namespace CloudSyncClientTests
                     "</Partners>" +
                 "</CloudSync>";
 
-            string errorMessage = SyncHelper.ImportSyncXml(syncXml);
+            string errorMessage = AcsSyncHelper.ImportSyncXml(syncXml);
             Assert.AreEqual<string>("", errorMessage);
 
             IDataAccessFactory dataAccess = new EntityFrameworkDataAccessFactory() { ConnectionStringOverride = connectionString };
