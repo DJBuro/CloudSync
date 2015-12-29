@@ -25,5 +25,7 @@ namespace CloudSyncModel
     {
         public int AndromedaSiteId { get; set; }
         public int EstimatedTimeForDelivery { get; set; }
+        public int? EstimatedCollectionTime { get; set; }
     }
+
 }
