@@ -46,6 +46,7 @@
     <Compile Include="AndroAdminDataAccessFactory.cs" />
     <Compile Include="ErrorHelper.cs" />
     <Compile Include="HttpHelper.cs" />
+    <Compile Include="Model\OpeningHoursForDay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializerHelper.cs" />
     <Compile Include="SyncHelper.cs" />

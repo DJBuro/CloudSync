@@ -108,7 +108,8 @@ namespace CloudSync
                         Lat = store.Address.Lat,
                         Long = store.Address.Long,
                         CountryId = store.Address.Country.Id
-                    }
+                    },
+                    OpeningHours = new Dictionary<string, List<TimeSpanBlock>> OpeningTimesByDay { get; set; }
                 };
                 syncModel.Stores.Add(syncStore);
             }
