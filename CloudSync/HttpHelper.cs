@@ -12,6 +12,10 @@ namespace CloudSync
     {
         public static bool RestGet(string url, out string xml)
         {
+            return HttpHelper.RestGet(url, null, out xml);
+        }
+        public static bool RestGet(string url, Dictionary<string, string> headers, out string xml)
+        {
             bool success = false;
 
             ErrorHelper.LogError("DEBUG", "CloudSync.HttpHelper.RestGet: url=" + url, null);
@@ -31,6 +35,13 @@ namespace CloudSync
             webRequest.Timeout = 20000;
             webRequest.ReadWriteTimeout = 20000;
             webRequest.AllowAutoRedirect = false;
+            if (headers != null)
+            {
+                foreach (KeyValuePair<string, string> header in headers)
+                {
+                    webRequest.Headers.Add(header.Key, header.Value);
+                }
+            }
 
             StreamReader readStream = null;
             WebResponse webResponse = null;
@@ -226,6 +237,11 @@ namespace CloudSync
 
         public static bool RestPost(string url, string xml, out string responseXml)
         {
+            return HttpHelper.RestPost(url, xml, null, out responseXml);
+        }
+
+        public static bool RestPost(string url, string xml, Dictionary<string, string> headers, out string responseXml)
+        {
             bool success = false;
             responseXml = string.Empty;
 
@@ -251,6 +267,13 @@ namespace CloudSync
             webRequest.Timeout = 20000;
             webRequest.ReadWriteTimeout = 20000;
             webRequest.AllowAutoRedirect = false;
+            if (headers != null)
+            {
+                foreach (KeyValuePair<string, string> header in headers)
+                {
+                    webRequest.Headers.Add(header.Key, header.Value);
+                }
+            }
 
             WebResponse webResponse = null;
             StreamReader readStream = null;
