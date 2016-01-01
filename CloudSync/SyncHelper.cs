@@ -233,13 +233,13 @@ namespace CloudSync
 
             foreach (var change in menuChanges) 
             {
-                syncModel.MenuUpdates.MenuChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() { 
+                syncModel.MenuUpdates.MenuChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() {
+                    AndromediaSiteId = change.AndromedaSiteId,
+                    Data = change.MenuData,
                     Id = change.Id,
                     LastUpdated = change.LastUpdated,
-                    AndromediaSiteId = change.AndromedaSiteId, 
-                    Data = change.MenuData,
                     MenuType = change.MenuType,
-                    Version = change.Version
+                    Version = change.Version,
                 });
             }
 
