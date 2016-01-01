@@ -407,6 +407,7 @@ namespace CloudSync
 
             // Get all the stores that have changed since the last sync with this specific cloud server
             var stores = storeDao.GetAfterDataVersion(fromVersion);// as List<AndroAdminDataAccess.Domain.Store>;
+            var etdStores = storeDao.GetEdtAfterDataVersion(fromVersion);
 
             foreach (AndroAdminDataAccess.Domain.Store store in stores)
             {
@@ -469,6 +470,20 @@ namespace CloudSync
                 };
 
                 syncModel.Stores.Add(syncStore);
+
+            }
+
+            foreach(var store in etdStores)
+            {
+                if (syncModel.StoreEdt == null) 
+                {
+                    syncModel.StoreEdt = new List<StoreEdt>();
+                }
+
+                syncModel.StoreEdt.Add(new StoreEdt() { 
+                    AndromedaSiteId = store.AndromedaSiteId,
+                    EstimatedTimeForDelivery = store.EstimatedDeliveryTime.GetValueOrDefault(45)
+                });
             }
 
         }

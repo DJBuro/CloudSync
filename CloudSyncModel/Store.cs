@@ -20,4 +20,10 @@ namespace CloudSyncModel
         public string StorePaymentProviderId { get; set; }
         public List<TimeSpanBlock> OpeningHours { get; set; }
     }
+
+    public class StoreEdt 
+    {
+        public int AndromedaSiteId { get; set; }
+        public int EstimatedTimeForDelivery { get; set; }
+    }
 }
