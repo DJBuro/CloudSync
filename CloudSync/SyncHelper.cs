@@ -42,7 +42,8 @@ namespace CloudSync
             SyncModel syncModel = new SyncModel();
 
             // The current data version
-            syncModel.DataVersion = masterVersion;
+            syncModel.FromDataVersion = fromVersion;
+            syncModel.ToDataVersion = masterVersion;
 
             // Get the store DAO
             IStoreDAO storeDAO = AndroAdminDataAccessFactory.GetStoreDAO();
@@ -58,7 +59,33 @@ namespace CloudSync
                     AndromedaSiteId = store.AndromedaSiteId,
                     ExternalSiteId = store.ExternalSiteId,
                     ExternalSiteName = store.ExternalSiteName,
-                    StoreStatus = store.StoreStatus.Status
+                    StoreStatus = store.StoreStatus.Status,
+                    Telephone = store.Telephone,
+                    TimeZone = store.TimeZone,
+                    Address = new Address()
+                    {
+                        Id = store.Address.Id,
+                        Org1 = store.Address.Org1,
+                        Org2 = store.Address.Org2,
+                        Org3 = store.Address.Org3,
+                        Prem1 = store.Address.Prem1,
+                        Prem2 = store.Address.Prem2,
+                        Prem3 = store.Address.Prem3,
+                        Prem4 = store.Address.Prem4,
+                        Prem5 = store.Address.Prem5,
+                        Prem6 = store.Address.Prem6,
+                        RoadNum = store.Address.RoadNum,
+                        RoadName = store.Address.RoadName,
+                        Locality = store.Address.Locality,
+                        Town = store.Address.Town,
+                        County = store.Address.County,
+                        State = store.Address.State,
+                        PostCode = store.Address.PostCode,
+                        DPS = store.Address.DPS,
+                        Lat = store.Address.Lat,
+                        Long = store.Address.Long,
+                        CountryId = store.Address.Country.Id,
+                    }
                 };
                 syncModel.Stores.Add(syncStore);
             }
@@ -123,6 +150,8 @@ namespace CloudSync
             {
                 // Does the store already exist?
                 ISyncDataAccess syncDataAccess = new SyncDataAccess();
+                if (SyncHelper.ConnectionStringOverride != null) syncDataAccess.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+
                 syncDataAccess.Sync(syncModel);
             }
         }
