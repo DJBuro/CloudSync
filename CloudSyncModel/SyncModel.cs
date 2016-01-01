@@ -13,6 +13,7 @@ namespace CloudSyncModel
         public int ToDataVersion { get; set; }
         public List<Store> Stores { get; set; }
         public List<Partner> Partners { get; set; }
+        public List<StorePaymentProvider> StorePaymentProviders { get; set; }
 
         public SyncModel()
         {
