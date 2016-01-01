@@ -99,7 +99,7 @@ namespace CloudSync
         /// <returns></returns>
         public static IHostV2DataService GetHostV2DataService()
         {
-            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostV2DataService();
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.HostV2DataConnectionService();
         }
 
         internal static IHostV2ForStoreDataService GetHostV2ForStoreDataService()
