@@ -52,6 +52,25 @@ namespace CloudSync
 
                 success = true;
             }
+            catch (WebException webException)
+            {
+                ErrorHelper.LogError("ERROR", "CloudSync.HttpHelper.RestGet", webException);
+
+                if (webException.Response != null)
+                {
+                    // Get the http response
+                    Stream receiveStream = webException.Response.GetResponseStream();
+
+                    Encoding encode = Encoding.GetEncoding("utf-8");
+
+                    // Pipe the stream to a higher level stream reader with the required encoding format. 
+                    readStream = new StreamReader(receiveStream, encode);
+
+                    xml = readStream.ReadToEnd();
+                }
+
+                success = false;
+            }
             catch (Exception exception)
             {
                 ErrorHelper.LogError("ERROR", "CloudSync.HttpHelper.RestGet", exception);
@@ -86,7 +105,12 @@ namespace CloudSync
             return success;
         }
 
-        public static bool RestPut(string url, string xml, out string responseXml)
+        public static bool RestPut(string url, string xml, Dictionary<string, string> headers, out string responseXml)
+        {
+            return HttpHelper.RestPut(url, xml, headers, "application/xml", out responseXml);
+        }
+
+        public static bool RestPut(string url, string xml, Dictionary<string, string> headers, string contentType, out string responseXml)
         {
             bool success = false;
             responseXml = string.Empty;
@@ -107,12 +131,19 @@ namespace CloudSync
 
             webRequest.Method = "PUT";
             webRequest.PreAuthenticate = true;
-            webRequest.ContentType = "application/xml";
-            webRequest.Accept = "application/xml";
+            webRequest.ContentType = contentType;
+            webRequest.Accept = contentType;
             webRequest.ContentLength = data.Length;
             webRequest.Timeout = 20000;
             webRequest.ReadWriteTimeout = 20000;
             webRequest.AllowAutoRedirect = false;
+            if (headers != null)
+            {
+                foreach (KeyValuePair<string, string> header in headers)
+                {
+                    webRequest.Headers.Add(header.Key, header.Value);
+                }
+            }
 
             WebResponse webResponse = null;
             StreamReader readStream = null;
