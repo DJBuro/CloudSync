@@ -112,14 +112,39 @@ namespace CloudSync
             SyncHelper.AddInStoreDevices(syncModel, fromVersion);
             // Serialize the sync model to XML
 
-            //add deliveryareas to sync model
-            SyncHelper.AddDeliveryAreas(syncModel, fromVersion);
+            ////add deliveryareas to sync model
+            //SyncHelper.AddDeliveryAreas(syncModel, fromVersion);
+
+            //add postcodeSectors to sync model
+            SyncHelper.AddPostCodeSectors(syncModel, fromVersion);
 
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
         }
 
+        private static void AddPostCodeSectors(SyncModel syncModel, int fromVersion) 
+        {
+            DeliveryAreaDataService deliveryAreaDataService = new DeliveryAreaDataService();
+            var postCodeSectors = deliveryAreaDataService.GetListPostCodes(e => e.DataVersion > fromVersion).ToList();
+
+            var model = syncModel.PostCodeSectors ?? (syncModel.PostCodeSectors = new List<PostCodeSector>());
+
+            foreach (var postcode in postCodeSectors)
+            { 
+                CloudSyncModel.PostCodeSector postCodeSector = new CloudSyncModel.PostCodeSector
+                {
+                    DeliveryZoneId = postcode.DeliveryZoneId,
+                    Id = postcode.Id,
+                    IsSelected = postcode.IsSelected,
+                    PostCodeSectorName = postcode.PostCodeSector1,
+                    StoreId = new Guid(postcode.DeliveryZoneName.Store.ExternalId)
+                };
+                syncModel.PostCodeSectors.Add(postCodeSector);
+            }            
+        }
+
+        //This method will be deleted
         private static void AddDeliveryAreas(SyncModel syncModel, int fromVersion) {
             DeliveryAreaDataService deliveryAreaDataService = new DeliveryAreaDataService();
             var deliveryAreas = deliveryAreaDataService.List(e => e.DataVersion > fromVersion).ToList();
@@ -475,7 +500,7 @@ namespace CloudSync
             // Build the web service url for the ACS server
             string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
 
-            //url = "http://localhost:49533/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
+            url = "http://localhost:49533/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
 
             string responseXml = "";
 

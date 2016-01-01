@@ -85,7 +85,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
-      <HintPath>..\..\WebSites\AndroAdmin\bin\EntityFramework.dll</HintPath>
+      <HintPath>bin\Debug\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\Services\AndroCloudServices\packages\Newtonsoft.Json.6.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -93,6 +93,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -108,6 +109,7 @@
     <Compile Include="Hubs\SiteHubs.cs" />
     <Compile Include="Menus\StoreMenuUpdate.cs" />
     <Compile Include="Menus\StoreMenuUpdates.cs" />
+    <Compile Include="StoreDeviceModels\DbSet.cs" />
     <Compile Include="StoreDeviceModels\StoreDevicesModels.cs" />
     <Compile Include="Partner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

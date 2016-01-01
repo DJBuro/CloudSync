@@ -60,5 +60,7 @@ namespace CloudSyncModel
 
         public List<DeliveryArea> DeliveryAreas { get; set; }
 
+        public List<PostCodeSector> PostCodeSectors { set; get; }
+
     }
 }

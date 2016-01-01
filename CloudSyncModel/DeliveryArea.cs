@@ -13,4 +13,13 @@ namespace CloudSyncModel
         public bool Removed { set; get; }
         public virtual Store Store { get; set; }
     }
+
+    public class PostCodeSector
+    {
+        public int Id { set; get; }
+        public int DeliveryZoneId { set; get; }
+        public string PostCodeSectorName { set; get; }
+        public bool IsSelected { set; get; }
+        public Guid StoreId { set; get; }        
+    }
 }
