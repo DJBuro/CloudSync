@@ -7,6 +7,7 @@ namespace CloudSyncModel
 {
     public class Application
     {
+        public int Id { get; set; }
         public string ExternalApplicationId { get; set; }
         public string Name { get; set; }
         public string Sites { get; set; }

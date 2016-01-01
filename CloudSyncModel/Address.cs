@@ -25,8 +25,8 @@ namespace CloudSyncModel
         public string State { get; set; }
         public string PostCode { get; set; }
         public string DPS { get; set; }
-        public double? Lat { get; set; }
-        public double? Long { get; set; }
+        public string Lat { get; set; }
+        public string Long { get; set; }
         public int CountryId { get; set; }
    }
 }
