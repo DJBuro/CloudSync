@@ -86,6 +86,9 @@ namespace CloudSync
             IStoreHubDataService storeHubDataDao = AndroAdminDataAccessFactory.GetSiteHubDAO();
             IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDAO();
 
+            //get the list of hosts, host types and connections based on version. 
+            //var a = AndroAdminDataAccessFactory.gethost
+
             if (SyncHelper.ConnectionStringOverride != null)
             {
                 storeDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
@@ -100,6 +103,8 @@ namespace CloudSync
             SyncHelper.AddInStorePaymentProviders(storePaymentProviderDao, syncModel, fromVersion);
 
             SyncHelper.AddInHubTasks(hubDataDao, storeHubDataDao, storeHubResetDao, syncModel, fromVersion);
+           
+            //SyncHelper.AddInHosts(
 
             IStoreMenuThumbnailsDataService storeMenuThumbnailsDataService = AndroAdminDataAccessFactory.GetStoreMenuThumbnailDAO();
             SyncHelper.AddinMenuUpdates(storeMenuThumbnailsDataService, syncModel, fromVersion);
