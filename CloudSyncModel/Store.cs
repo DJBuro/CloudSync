@@ -13,6 +13,9 @@ namespace CloudSyncModel
         public string StoreStatus { get; set; }
         public string Phone { get; set; }
         public string TimeZone { get; set; }
+        public string TimeZoneInfoId { get; set; }
+        public string UiCulture { get; set; }
+
         public Address Address { get; set; }
         public string StorePaymentProviderId { get; set; }
         public List<TimeSpanBlock> OpeningHours { get; set; }

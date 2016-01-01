@@ -383,6 +383,8 @@ namespace CloudSync
                     StoreStatus = store.StoreStatus.Status,
                     Phone = store.Telephone,
                     TimeZone = store.TimeZone,
+                    TimeZoneInfoId = store.TimeZoneInfoId,
+                    UiCulture = store.UiCulture,
                     StorePaymentProviderId = store.PaymentProvider == null ? string.Empty : store.PaymentProvider.Id.ToString(),
                     Address = new Address()
                     {
