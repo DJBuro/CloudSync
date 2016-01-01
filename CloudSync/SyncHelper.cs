@@ -58,7 +58,6 @@ namespace CloudSync
                     // Run out of time - future task
                 }
 
-                if(errorMessage.Length >0) break;
             }
 
             return errorMessage;
@@ -326,7 +325,7 @@ namespace CloudSync
             // Extract the data version from the xml returned by the ACS server
             XElement xElement = XElement.Parse(responseXml);
 
-            // Is there a data vesion on the xml?
+            // Is there a data version on the xml?
             string dataVersionString = xElement.Element("Version").Value;
             if (dataVersionString == null || dataVersionString.Length == 0)
             {
