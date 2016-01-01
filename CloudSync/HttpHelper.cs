@@ -14,9 +14,7 @@ namespace CloudSync
         {
             bool success = false;
 
-            ErrorHelper.LogError("CloudSync.HttpHelper.RestGet: url=" + url, null);
-
-//            Andromeda.Logging.Log.LogEvent("AndroAdminClient", "GET url " + url.Replace("429C19EE237245358F8E1189ABDB1388", "XXX"), Andromeda.Logging.EventTypeEnum.Information);
+            ErrorHelper.LogError("DEBUG", "CloudSync.HttpHelper.RestGet: url=" + url, null);
 
             xml = "";
 
@@ -53,12 +51,10 @@ namespace CloudSync
                 xml = readStream.ReadToEnd();
 
                 success = true;
-
-  //              Andromeda.Logging.Log.LogEvent("AndroAdminClient", "GET succeeded: " + xml, Andromeda.Logging.EventTypeEnum.Information);
             }
             catch (Exception exception)
             {
-                ErrorHelper.LogError("CloudSync.HttpHelper.RestGet", exception);
+                ErrorHelper.LogError("ERROR", "CloudSync.HttpHelper.RestGet", exception);
 
                 success = false;
             }
@@ -94,6 +90,8 @@ namespace CloudSync
         {
             bool success = false;
             responseXml = "";
+
+            ErrorHelper.LogError("DEBUG", "CloudSync.HttpHelper.RestPut: url=" + url, null);
 
             UTF8Encoding encoding = new UTF8Encoding();
             byte[] data = encoding.GetBytes(xml);
@@ -145,7 +143,7 @@ namespace CloudSync
             }
             catch (Exception exception)
             {
- //               Log.LogEvent(Global.LogName, "LivePepper HTTP REST PUT failed", EventTypeEnum.Error, exception);
+                ErrorHelper.LogError("ERROR", "RestPut", exception);
                 success = false;
             }
             finally

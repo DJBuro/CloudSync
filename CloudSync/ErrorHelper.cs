@@ -9,7 +9,7 @@ namespace AndroAdmin.Helpers
 {
     public class ErrorHelper
     {
-        public static void LogError(string method, Exception exception)
+        public static void LogError(string severity, string method, Exception exception)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace AndroAdmin.Helpers
                 AndroAdminDataAccess.Domain.Log log = new AndroAdminDataAccess.Domain.Log();
                 log.Source = "AndroAdmin";
                 log.Method = method;
-                log.Severity = "ERROR";
+                log.Severity = severity;
                 log.StoreId = "";
                 log.Created = DateTime.UtcNow;
 
