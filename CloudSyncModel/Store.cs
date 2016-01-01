@@ -14,6 +14,6 @@ namespace CloudSyncModel
         public string Phone { get; set; }
         public string TimeZone { get; set; }
         public Address Address { get; set; }
-        public string StorePaymentProvider { get; set; }
+        public string StorePaymentProviderId { get; set; }
     }
 }
