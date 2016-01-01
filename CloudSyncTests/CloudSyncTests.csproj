@@ -39,9 +39,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\WebSites\AndroAdmin\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -57,13 +67,24 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AndroAdminTestHelper.cs" />
     <Compile Include="CloudSyncUnitTests.cs" />
+    <Compile Include="DatabaseHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DataAccess\AndroAdminDataAccess\AndroAdminDataAccess.csproj">
+      <Project>{3ecf6405-90d5-4c8b-abcc-c0baedfdeef9}</Project>
+      <Name>AndroAdminDataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\WebSites\AndroAdmin\AndroAdmin.csproj">
+      <Project>{ae3d99c8-768e-4a65-9684-c980b80602aa}</Project>
+      <Name>AndroAdmin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CloudSyncModel\CloudSyncModel.csproj">
       <Project>{56aa880a-eff0-440f-92f5-39f2c578cbdd}</Project>
       <Name>CloudSyncModel</Name>
