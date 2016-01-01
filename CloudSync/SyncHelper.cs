@@ -112,6 +112,8 @@ namespace CloudSync
             SyncHelper.AddInStoreDevices(syncModel, fromVersion);
             // Serialize the sync model to XML
 
+            //add deliveryareas to sync model
+
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
