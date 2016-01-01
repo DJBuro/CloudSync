@@ -8,7 +8,7 @@ namespace CloudSyncModel.Hubs
         /// Gets or sets the site id.
         /// </summary>
         /// <value>The site id.</value>
-        public Guid SiteId { get; set; }
+        public string ExternalId { get; set; }
 
         /// <summary>
         /// Gets or sets the hub id.

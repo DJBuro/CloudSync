@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Xml.Linq;
 using AndroAdminDataAccess.DataAccess;
 using AndroCloudDataAccess.DataAccess;
@@ -31,7 +30,9 @@ namespace CloudSync
             }
 
             // Get all the hosts
-            IList<AndroAdminDataAccess.Domain.Host> hosts = AndroAdminDataAccessFactory.GetHostDAO().GetAll();
+            IList<AndroAdminDataAccess.Domain.Host> hosts = AndroAdminDataAccessFactory
+                .GetHostDAO()
+                .GetAll();
 
             string errorMessage = string.Empty;
 
@@ -39,7 +40,7 @@ namespace CloudSync
             {
                 // 1) Ask the server for it's current data version
                 int fromVersion = 0;
-                errorMessage = SyncHelper.GetACSServerDataVersion(host, out fromVersion);
+                errorMessage = SyncHelper.GetAcsServerDataVersion(host, out fromVersion);
 
                 if (errorMessage.Length == 0)
                 {
@@ -50,12 +51,14 @@ namespace CloudSync
                     if (errorMessage.Length != 0) return errorMessage;
 
                     // 3) Send sync XML to Cloud Server.  Cloud server returns a list of logs and audit data which have occurred since the last update.
-                    errorMessage = SyncHelper.SyncACSServer(host, syncXml);
+                    errorMessage = SyncHelper.SyncAcsServer(host, syncXml);
                     if (errorMessage.Length != 0) return errorMessage;
 
                     // 4) Insert logs/audit data into Cloud Master.
                     // Run out of time - future task
                 }
+
+                if(errorMessage.Length >0) break;
             }
 
             return errorMessage;
@@ -70,30 +73,31 @@ namespace CloudSync
             syncModel.ToDataVersion = masterVersion;
 
             // Get the store DAO
-            IStoreDAO storeDAO = AndroAdminDataAccessFactory.GetStoreDAO();
+            IStoreDAO storeDao = AndroAdminDataAccessFactory.GetStoreDAO();
             // Get the partner DAO
-            IPartnerDAO partnerDAO = AndroAdminDataAccessFactory.GetPartnerDAO();
+            IPartnerDAO partnerDao = AndroAdminDataAccessFactory.GetPartnerDAO();
             // Get the store payment provider DAO
-            IStorePaymentProviderDAO storePaymentProviderDAO = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
+            IStorePaymentProviderDAO storePaymentProviderDao = AndroAdminDataAccessFactory.GetStorePaymentProviderDAO();
 
             //get the hub and site-hub data services 
-            IHubDataService hubDataDAO = AndroAdminDataAccessFactory.GetHubDAO();
-            IStoreHubDataService storeHubDataDAO = AndroAdminDataAccessFactory.GetSiteHubDAO();
+            IHubDataService hubDataDao = AndroAdminDataAccessFactory.GetHubDAO();
+            IStoreHubDataService storeHubDataDao = AndroAdminDataAccessFactory.GetSiteHubDAO();
+            IHubResetDataService storeHubResetDao = AndroAdminDataAccessFactory.GetHubResetDataService();
 
             if (SyncHelper.ConnectionStringOverride != null)
             {
-                storeDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
-                partnerDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
-                storePaymentProviderDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                storeDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                partnerDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                storePaymentProviderDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
             }
 
-            SyncHelper.AddInStoreUpdates(storeDAO, syncModel, fromVersion);
+            SyncHelper.AddInStoreUpdates(storeDao, syncModel, fromVersion);
 
-            SyncHelper.AddInPartnerUpdates(partnerDAO, storeDAO, syncModel, fromVersion);
+            SyncHelper.AddInPartnerUpdates(partnerDao, storeDao, syncModel, fromVersion);
 
-            SyncHelper.AddInStorePaymentProviders(storePaymentProviderDAO, syncModel, fromVersion);
+            SyncHelper.AddInStorePaymentProviders(storePaymentProviderDao, syncModel, fromVersion);
 
-            SyncHelper.AddInHubs(hubDataDAO, storeHubDataDAO, syncModel, fromVersion);
+            SyncHelper.AddInHubTasks(hubDataDao, storeHubDataDao, storeHubResetDao, syncModel, fromVersion);
 
             // Serialize the sync model to XML
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
@@ -101,19 +105,44 @@ namespace CloudSync
             return string.Empty;
         }
   
-        private static void AddInHubs(IHubDataService hubDataDao, IStoreHubDataService storeHubDataDAO, SyncModel syncModel, int fromVersion)
+        private static void AddInHubTasks(
+            IHubDataService hubDataDao, 
+            IStoreHubDataService storeHubDataDao, 
+            IHubResetDataService storeHubResetDao, 
+            SyncModel syncModel, 
+            int fromVersion)
         {
             var signalRHubs = hubDataDao.GetAfterDataVersion(fromVersion);
+            
+            var activeHubs = signalRHubs.Where(e => !e.Removed && e.Active).ToList();
+            var inactiveHubs = signalRHubs.Where(e => e.Removed || !e.Active).ToList();
+            var resets = storeHubResetDao.GetResetsAfterDataVersion(fromVersion);
 
-            var removed = signalRHubs.Where(e => e.Removed);
-
+            syncModel.HubUpdates = new CloudSyncModel.Hubs.HubUpdates() 
+            {
+                ActiveHubList = activeHubs.Select(e=> 
+                    new CloudSyncModel.Hubs.HubHostModel(){ 
+                        Id = e.Id, 
+                        Url = e.Address, 
+                        SiteHubs = storeHubDataDao.GetSitesUsingHub(e.Id).Select(s => new CloudSyncModel.Hubs.SiteHubs() { HubId = e.Id, ExternalId = s.StoreExternalId }).ToList()
+                }).ToList(),
+                InActiveHubList = inactiveHubs.Select(e=> new CloudSyncModel.Hubs.HubHostModel(){
+                    Id = e.Id,
+                    Url = e.Address,
+                    SiteHubs = new List<CloudSyncModel.Hubs.SiteHubs>() //empty list as the tables will enforce the dropping related rows
+                }).ToList(),
+                SiteHubHardwareKeyResets = resets.Select(e=> new CloudSyncModel.Hubs.SiteHubReset(){
+                    AndromedaSiteId = e.Id,
+                    ExternalSiteId = e.ExternalSiteId
+                }).ToList()
+            };
         }
   
-        private static void AddInStorePaymentProviders(IStorePaymentProviderDAO storePaymentProviderDAO, SyncModel syncModel, int fromVersion)
+        private static void AddInStorePaymentProviders(IStorePaymentProviderDAO storePaymentProviderDao, SyncModel syncModel, int fromVersion)
         {
             syncModel.StorePaymentProviders = new List<StorePaymentProvider>();
 
-            var storePaymentProviders = storePaymentProviderDAO.GetAfterDataVersion(fromVersion);
+            var storePaymentProviders = storePaymentProviderDao.GetAfterDataVersion(fromVersion);
 
             foreach (AndroAdminDataAccess.Domain.StorePaymentProvider storePaymentProvider in storePaymentProviders)
             {
@@ -130,10 +159,10 @@ namespace CloudSync
             }
         }
 
-        private static void AddInPartnerUpdates(IPartnerDAO partnerDAO, IStoreDAO storeDAO, SyncModel syncModel, int fromVersion)
+        private static void AddInPartnerUpdates(IPartnerDAO partnerDao, IStoreDAO storeDao, SyncModel syncModel, int fromVersion)
         {
             // Get all the partners that have changed since the last sync with this specific cloud server
-            List<AndroAdminDataAccess.Domain.Partner> partners = (List<AndroAdminDataAccess.Domain.Partner>)partnerDAO.GetAfterDataVersion(fromVersion);
+            List<AndroAdminDataAccess.Domain.Partner> partners = (List<AndroAdminDataAccess.Domain.Partner>)partnerDao.GetAfterDataVersion(fromVersion);
             foreach (AndroAdminDataAccess.Domain.Partner partner in partners)
             {
                 // Add the partner
@@ -146,11 +175,11 @@ namespace CloudSync
                 syncModel.Partners.Add(syncPartner);
 
                 // Get the partner DAO
-                IACSApplicationDAO acsApplicationDAO = AndroAdminDataAccessFactory.GetACSApplicationDAO();
-                if (SyncHelper.ConnectionStringOverride != null) acsApplicationDAO.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
+                IACSApplicationDAO acsApplicationDao = AndroAdminDataAccessFactory.GetACSApplicationDAO();
+                if (SyncHelper.ConnectionStringOverride != null) acsApplicationDao.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
 
                 // Get all the applications that have changed for this partner since the last sync with this specific cloud server
-                IList<AndroAdminDataAccess.Domain.ACSApplication> acsApplications = acsApplicationDAO.GetByPartnerAfterDataVersion(partner.Id, fromVersion);
+                IList<AndroAdminDataAccess.Domain.ACSApplication> acsApplications = acsApplicationDao.GetByPartnerAfterDataVersion(partner.Id, fromVersion);
                 foreach (AndroAdminDataAccess.Domain.ACSApplication acsApplication in acsApplications)
                 {
                     // Add the application
@@ -165,7 +194,7 @@ namespace CloudSync
 
                     // Get all the application stores that have changed for this application since the last sync with this specific cloud server
                     StringBuilder siteIds = new StringBuilder();
-                    IList<AndroAdminDataAccess.Domain.Store> acsApplicationStores = storeDAO.GetByACSApplicationId(acsApplication.Id);
+                    IList<AndroAdminDataAccess.Domain.Store> acsApplicationStores = storeDao.GetByACSApplicationId(acsApplication.Id);
                     foreach (AndroAdminDataAccess.Domain.Store store in acsApplicationStores)
                     {
                         if (siteIds.Length > 0) siteIds.Append(",");
@@ -178,11 +207,11 @@ namespace CloudSync
             }
         }
 
-        private static void AddInStoreUpdates(IStoreDAO storeDAO, SyncModel syncModel, int fromVersion)
+        private static void AddInStoreUpdates(IStoreDAO storeDao, SyncModel syncModel, int fromVersion)
         {
             
             // Get all the stores that have changed since the last sync with this specific cloud server
-            var stores = storeDAO.GetAfterDataVersion(fromVersion);// as List<AndroAdminDataAccess.Domain.Store>;
+            var stores = storeDao.GetAfterDataVersion(fromVersion);// as List<AndroAdminDataAccess.Domain.Store>;
 
             foreach (AndroAdminDataAccess.Domain.Store store in stores)
             {
@@ -265,7 +294,7 @@ namespace CloudSync
             return errorMessage;
         }
 
-        public static string GetACSServerDataVersion(AndroAdminDataAccess.Domain.Host host, out int acsServerDataVersion)
+        public static string GetAcsServerDataVersion(AndroAdminDataAccess.Domain.Host host, out int acsServerDataVersion)
         {
             acsServerDataVersion = 0;
 
@@ -299,7 +328,7 @@ namespace CloudSync
             return "";
         }
 
-        public static string SyncACSServer(AndroAdminDataAccess.Domain.Host host, string syncXml)
+        public static string SyncAcsServer(AndroAdminDataAccess.Domain.Host host, string syncXml)
         {
             // Build the web service url for the ACS server
             string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
