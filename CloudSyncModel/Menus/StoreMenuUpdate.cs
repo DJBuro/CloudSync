@@ -12,7 +12,7 @@ namespace CloudSyncModel.Menus
         public string MenuType { get; set; }
         public string Data { get; set; }
 
-
         public DateTime LastUpdated { get; set; }
+        public int? Version { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace CloudSync
                 int fromVersion = 0;
                 errorMessage = SyncHelper.GetAcsServerDataVersion(host, out fromVersion);
 
-                //todo make the response ienumerable
+                //todo make the response enumerable
                 //yield errorMessage
 
                 if (errorMessage.Length == 0)
@@ -226,17 +226,32 @@ namespace CloudSync
         {
             IStoreMenuThumbnailsDataService dataService = AndroAdminDataAccessFactory.GetStoreMenuThumbnailDAO();
 
-            IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> changes = dataService.GetAfterDataVersion(fromVersion);
-            foreach (var change in changes)
+            IEnumerable<AndroAdminDataAccess.Domain.StoreMenu> menuChanges =
+                dataService.GetStoreMenuChangesAfterDataVersion(fromVersion);
+            IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> thumbnailChanges = 
+                dataService.GetStoreMenuThumbnailChangesAfterDataVersion(fromVersion);
+
+            foreach (var change in menuChanges) 
             {
-                syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate
-                    {
-                        Id = change.Id,
-                        LastUpdated = change.LastUpdate,
-                        AndromediaSiteId = change.AndromediaSiteId,
-                        Data = change.Data,
-                        MenuType = change.MenuType
-                    });
+                syncModel.MenuUpdates.MenuChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() { 
+                    Id = change.Id,
+                    LastUpdated = change.LastUpdated,
+                    AndromediaSiteId = change.AndromedaSiteId, 
+                    Data = change.MenuData,
+                    MenuType = change.MenuType,
+                    Version = change.Version
+                });
+            }
+
+            foreach (var change in thumbnailChanges)
+            {
+                syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() {
+                    Id = change.Id,
+                    LastUpdated = change.LastUpdate,
+                    AndromediaSiteId = change.AndromediaSiteId,
+                    Data = change.Data,
+                    MenuType = change.MenuType
+                });
             }
         }
 
