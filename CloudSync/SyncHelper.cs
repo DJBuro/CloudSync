@@ -99,24 +99,21 @@ namespace CloudSync
 
             SyncHelper.AddInHubTasks(hubDataDao, storeHubDataDao, storeHubResetDao, syncModel, fromVersion);
 
+            IStoreMenuThumbnailsDataService storeMenuThumbnailsDataService = AndroAdminDataAccessFactory.GetStoreMenuThumbnailDAO();
+            SyncHelper.AddinMenuUpdates(storeMenuThumbnailsDataService, syncModel, fromVersion);
             // Serialize the sync model to XML
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
         }
   
-        private static void AddInHubTasks(
-            IHubDataService hubDataDao, 
-            IStoreHubDataService storeHubDataDao, 
-            IHubResetDataService storeHubResetDao, 
-            SyncModel syncModel, 
-            int fromVersion)
+        private static void AddInHubTasks(IHubDataService hubDataDao, IStoreHubDataService storeHubDataDao, IHubResetDataService storeHubResetDao, SyncModel syncModel, int fromVersion)
         {
             var signalRHubs = hubDataDao.GetAfterDataVersion(fromVersion);
             
             var activeHubs = signalRHubs.Where(e => !e.Removed && e.Active).ToList();
             var inactiveHubs = signalRHubs.Where(e => e.Removed || !e.Active).ToList();
-            var resets = storeHubResetDao.GetResetsAfterDataVersion(fromVersion);
+            var resets = storeHubResetDao.GetStoresToResetAfterDataVersion(fromVersion);
 
             syncModel.HubUpdates = new CloudSyncModel.Hubs.HubUpdates() 
             {
@@ -138,6 +135,20 @@ namespace CloudSync
             };
         }
   
+        private static void AddinMenuUpdates(IStoreMenuThumbnailsDataService dataServicee, SyncModel syncModel, int fromVersion)
+        {
+            IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> changes = dataServicee.GetAfterDataVersion(fromVersion);
+            foreach (var change in changes) 
+            {
+                syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate
+                    {
+                        Id = change.Id,
+                        LastUpdated = change.LastUpdate,
+                        AndromediaSiteId = change.AndromediaSiteId
+                    });
+            }
+        }
+
         private static void AddInStorePaymentProviders(IStorePaymentProviderDAO storePaymentProviderDao, SyncModel syncModel, int fromVersion)
         {
             syncModel.StorePaymentProviders = new List<StorePaymentProvider>();
@@ -172,6 +183,7 @@ namespace CloudSync
                     ExternalId = partner.ExternalId,
                     Name = partner.Name
                 };
+
                 syncModel.Partners.Add(syncPartner);
 
                 // Get the partner DAO
