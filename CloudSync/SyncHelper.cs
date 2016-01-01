@@ -144,7 +144,9 @@ namespace CloudSync
                     {
                         Id = change.Id,
                         LastUpdated = change.LastUpdate,
-                        AndromediaSiteId = change.AndromediaSiteId
+                        AndromediaSiteId = change.AndromediaSiteId,
+                        Data = change.Data,
+                        MenuType = change.MenuType
                     });
             }
         }
