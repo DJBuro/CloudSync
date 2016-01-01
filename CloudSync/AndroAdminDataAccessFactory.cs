@@ -62,5 +62,10 @@ namespace CloudSync
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.HostDAO();
         }
+
+        public static ISettingsDAO GetSettingsDAO()
+        {
+            return new AndroAdminDataAccess.EntityFramework.DataAccess.SettingsDAO();
+        }
     }
 }
