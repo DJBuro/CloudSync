@@ -123,6 +123,7 @@ namespace CloudSync
             IHostV2ForApplicationDataService hostV2ForApplication = AndroAdminDataAccessFactory.GetHostV2ForApplicationDataService();
 
             var hosts = hostV2DataService.List(e => e.DataVersion > fromVersion);
+            
             var activeHosts = hosts.Where(e => e.Enabled);
             var disabledHosts = hosts.Where(e => !e.Enabled);
 
