@@ -83,7 +83,7 @@ namespace CloudSync
             return new AndroAdminDataAccess.EntityFramework.DataAccess.StoreHubDataService();
         }
 
-        public static IHubResetDataService GetHubResetDataService() 
+        public static IHubResetDataService GetHubResetDAO() 
         {
             return new AndroAdminDataAccess.EntityFramework.DataAccess.HubDataService();
         }
