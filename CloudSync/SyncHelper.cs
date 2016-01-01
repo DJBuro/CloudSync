@@ -132,7 +132,7 @@ namespace CloudSync
                     SiteHubs = new List<CloudSyncModel.Hubs.SiteHubs>() //empty list as the tables will enforce the dropping related rows
                 }).ToList(),
                 SiteHubHardwareKeyResets = resets.Select(e=> new CloudSyncModel.Hubs.SiteHubReset(){
-                    AndromedaSiteId = e.Id,
+                    AndromedaSiteId = e.AndromedaSiteId,
                     ExternalSiteId = e.ExternalSiteId
                 }).ToList()
             };
@@ -293,7 +293,7 @@ namespace CloudSync
 
         }
 
-        public static string ImportSyncXml(string syncXml)
+        public static string ImportSyncXml(string syncXml, Action<string> successMessages = null, Action<string> failureMessages = null)
         {
             SyncModel syncModel = new SyncModel();
 
@@ -305,7 +305,7 @@ namespace CloudSync
                 ISyncDataAccess syncDataAccess = new SyncDataAccess();
                 if (SyncHelper.ConnectionStringOverride != null) syncDataAccess.ConnectionStringOverride = SyncHelper.ConnectionStringOverride;
 
-                return syncDataAccess.Sync(syncModel);
+                return syncDataAccess.Sync(syncModel, successMessages, failureMessages);
             }
 
             return errorMessage;
