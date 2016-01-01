@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using AndroCloudDataAccess.DataAccess;
 using AndroCloudDataAccessEntityFramework.DataAccess;
-using CloudSync.Model;
+using CloudSyncModel;
 
 namespace CloudSync
 {
@@ -103,19 +103,11 @@ namespace CloudSync
 
             string errorMessage = SerializeHelper.Deserialize<SyncModel>(syncXml, out syncModel);
 
-            // Process each store that's changed
-            foreach (Store store in syncModel.Stores)
+            if (errorMessage.Length == 0)
             {
                 // Does the store already exist?
                 ISyncDataAccess syncDataAccess = new SyncDataAccess();
-                
-
-      //          store.AndromedaSiteId
-            }
-
-            // Process each partner that's changed
-            foreach (Partner partner in syncModel.Partners)
-            {
+                syncDataAccess.Sync(syncModel);
             }
         }
     }

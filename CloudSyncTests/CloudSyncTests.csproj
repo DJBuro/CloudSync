@@ -63,6 +63,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CloudSyncModel\CloudSyncModel.csproj">
+      <Project>{56aa880a-eff0-440f-92f5-39f2c578cbdd}</Project>
+      <Name>CloudSyncModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CloudSync\CloudSync.csproj">
+      <Project>{3e34d787-0c46-4501-a774-cca5930ab20d}</Project>
+      <Name>CloudSync</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
