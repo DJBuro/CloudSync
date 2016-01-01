@@ -109,7 +109,6 @@
     <Compile Include="Hubs\SiteHubs.cs" />
     <Compile Include="Menus\StoreMenuUpdate.cs" />
     <Compile Include="Menus\StoreMenuUpdates.cs" />
-    <Compile Include="StoreDeviceModels\DbSet.cs" />
     <Compile Include="StoreDeviceModels\StoreDevicesModels.cs" />
     <Compile Include="Partner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
