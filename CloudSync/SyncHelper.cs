@@ -113,12 +113,32 @@ namespace CloudSync
             // Serialize the sync model to XML
 
             //add deliveryareas to sync model
+            SyncHelper.AddDeliveryAreas(syncModel, fromVersion);
 
             syncXml = SerializeHelper.Serialize<SyncModel>(syncModel);
 
             return string.Empty;
         }
- 
+
+        private static void AddDeliveryAreas(SyncModel syncModel, int fromVersion) {
+            DeliveryAreaDataService deliveryAreaDataService = new DeliveryAreaDataService();
+            var deliveryAreas = deliveryAreaDataService.List(e => e.DataVersion > fromVersion).ToList();
+             
+            var model = syncModel.DeliveryAreas ?? (syncModel.DeliveryAreas = new List<DeliveryArea>());            
+            
+            foreach (var delArea in deliveryAreas) 
+            {
+                CloudSyncModel.DeliveryArea deliveryArea = new CloudSyncModel.DeliveryArea
+                {
+                    DeliveryArea1 = delArea.DeliveryArea1,
+                    Removed = delArea.Removed,
+                    Store = new Store { ExternalSiteId = delArea.Store.ExternalId}                    
+                };
+                syncModel.DeliveryAreas.Add(deliveryArea);
+            }
+
+        }
+
         private static void AddInStoreDevices(SyncModel syncModel, int fromVersion)
         {
             IStoreDevicesDataService storeDevicesDataService = new StoreDevicesDataService();
@@ -130,16 +150,16 @@ namespace CloudSync
             var storeDevices = storeDevicesDataService.List(e => e.DataVersion > fromVersion);
 
             var model = syncModel.StoreDeviceModels ?? (syncModel.StoreDeviceModels = new StoreDevicesModels());
-            
+
             //add or update
             model.ExternalApis = externalApis.Select(e => e.ToSyncModel()).ToList();
             model.Devices = devices.Select(e => e.ToSyncModel()).ToList();
             model.SiteDevices = storeDevices.Select(e => e.ToSyncModel()).ToList();
-            
+
             //models to remove
             model.RemovedExternalApis = externalApiDataService
                 .ListRemoved(e => e.DataVersion > fromVersion)
-                .Select(e=> e.ToSyncModel())
+                .Select(e => e.ToSyncModel())
                 .ToList();
             model.RemovedDevices = devicesDataService
                 .ListRemoved(e => e.DataVersion > fromVersion)
@@ -162,7 +182,7 @@ namespace CloudSync
             IHostV2ForApplicationDataService hostV2ForApplication = AndroAdminDataAccessFactory.GetHostV2ForApplicationDataService();
 
             var hosts = hostV2DataService.List(e => e.DataVersion > fromVersion);
-            
+
             var activeHosts = hosts.Where(e => e.Enabled);
             var disabledHosts = hosts.Where(e => !e.Enabled);
 
@@ -228,12 +248,13 @@ namespace CloudSync
 
             IEnumerable<AndroAdminDataAccess.Domain.StoreMenu> menuChanges =
                 dataService.GetStoreMenuChangesAfterDataVersion(fromVersion);
-            IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> thumbnailChanges = 
+            IEnumerable<AndroAdminDataAccess.Domain.StoreMenuThumbnails> thumbnailChanges =
                 dataService.GetStoreMenuThumbnailChangesAfterDataVersion(fromVersion);
 
-            foreach (var change in menuChanges) 
+            foreach (var change in menuChanges)
             {
-                syncModel.MenuUpdates.MenuChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() {
+                syncModel.MenuUpdates.MenuChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate()
+                {
                     AndromediaSiteId = change.AndromedaSiteId,
                     Data = change.MenuData,
                     Id = change.Id,
@@ -245,7 +266,8 @@ namespace CloudSync
 
             foreach (var change in thumbnailChanges)
             {
-                syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate() {
+                syncModel.MenuUpdates.MenuThumbnailChanges.Add(new CloudSyncModel.Menus.StoreMenuUpdate()
+                {
                     Id = change.Id,
                     LastUpdated = change.LastUpdate,
                     AndromediaSiteId = change.AndromediaSiteId,
@@ -450,6 +472,8 @@ namespace CloudSync
         {
             // Build the web service url for the ACS server
             string url = host.PrivateHostName + "/sync?key=791BB89009C544129F84B409738ACA4E";
+            
+            //string url = "http://localhost/AndroCloudPrivateWCFServices/privateapi/sync?key=791BB89009C544129F84B409738ACA4E";
 
             string responseXml = "";
 

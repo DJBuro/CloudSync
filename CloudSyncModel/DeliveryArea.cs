@@ -8,11 +8,9 @@ namespace CloudSyncModel
     public class DeliveryArea
     {
         public System.Guid Id { get; set; }
-        public int StoreId { get; set; }
+        public Guid StoreId { get; set; }
         public string DeliveryArea1 { get; set; }
-        public int DataVersion { get; set; }
-        public bool Removed { get; set; }
-
+        public bool Removed { set; get; }
         public virtual Store Store { get; set; }
     }
 }
