@@ -31,6 +31,7 @@ namespace CloudSync.Extensions
                 HostId = model.HostId
             };
         }
+
         public static HostLinkApplication ToSyncModel(this AndroAdminDataAccess.DataAccess.HostApplicationConnection model)
         {
             return new HostLinkApplication()
