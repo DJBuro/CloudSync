@@ -142,7 +142,8 @@ namespace CloudSync
                     {
                         Id = acsApplication.Id,
                         ExternalApplicationId = acsApplication.ExternalApplicationId,
-                        Name = acsApplication.Name
+                        Name = acsApplication.Name,
+                        ExternalDisplayName = acsApplication.ExternalApplicationName
                     };
                     syncPartner.Applications.Add(syncApplication);
 

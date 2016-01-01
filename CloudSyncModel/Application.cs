@@ -11,5 +11,6 @@ namespace CloudSyncModel
         public string ExternalApplicationId { get; set; }
         public string Name { get; set; }
         public string Sites { get; set; }
+        public string ExternalDisplayName { get; set; }
     }
 }
