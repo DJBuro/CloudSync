@@ -12,9 +12,17 @@ namespace CloudSync
     {
         public static bool RestGet(string url, out string xml)
         {
-            return HttpHelper.RestGet(url, null, out xml);
+            return HttpHelper.RestGet(url, null, "application/xml", out xml);
+        }
+        public static bool RestGet(string url, string accept, out string xml)
+        {
+            return HttpHelper.RestGet(url, null, accept, out xml);
         }
         public static bool RestGet(string url, Dictionary<string, string> headers, out string xml)
+        {
+            return HttpHelper.RestGet(url, null, "application/xml", out xml);
+        }
+        public static bool RestGet(string url, Dictionary<string, string> headers, string accept, out string xml)
         {
             bool success = false;
 
@@ -31,7 +39,7 @@ namespace CloudSync
             // The REST service to call
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
 
-            webRequest.Accept = "application/xml";
+            webRequest.Accept = accept;
             webRequest.Timeout = 20000;
             webRequest.ReadWriteTimeout = 20000;
             webRequest.AllowAutoRedirect = false;
@@ -242,6 +250,11 @@ namespace CloudSync
 
         public static bool RestPost(string url, string xml, Dictionary<string, string> headers, out string responseXml)
         {
+            return HttpHelper.RestPost(url, xml, "application/xml", null, out responseXml);
+        }
+
+        public static bool RestPost(string url, string xml, string dataType, Dictionary<string, string> headers, out string responseXml)
+        {
             bool success = false;
             responseXml = string.Empty;
 
@@ -261,8 +274,8 @@ namespace CloudSync
 
             webRequest.Method = "POST";
             webRequest.PreAuthenticate = true;
-            webRequest.ContentType = "application/xml";
-            webRequest.Accept = "application/xml";
+            webRequest.ContentType = dataType;
+            webRequest.Accept = dataType;
             webRequest.ContentLength = data.Length;
             webRequest.Timeout = 20000;
             webRequest.ReadWriteTimeout = 20000;
