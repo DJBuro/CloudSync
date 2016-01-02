@@ -174,7 +174,7 @@ namespace CloudSync
                     Id = postcode.Id,
                     IsSelected = postcode.IsSelected,
                     PostCodeSectorName = postcode.PostCodeSector1,
-                    StoreId = new Guid(postcode.DeliveryZoneName.Store.ExternalId)
+                    StoreId = postcode.DeliveryZoneName.Store.ExternalId
                 };
                 syncModel.PostCodeSectors.Add(postCodeSector);
             }
