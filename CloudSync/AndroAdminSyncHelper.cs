@@ -428,7 +428,8 @@ namespace CloudSync
                 syncModel.StoreEdt.Add(new StoreEdt()
                 {
                     AndromedaSiteId = store.AndromedaSiteId,
-                    EstimatedTimeForDelivery = store.EstimatedDeliveryTime.GetValueOrDefault(45)
+                    EstimatedTimeForDelivery = store.EstimatedDeliveryTime.GetValueOrDefault(45),
+                    EstimatedCollectionTime = store.EstimatedCollectionTime
                 });
             }
         }
