@@ -15,14 +15,40 @@ namespace CloudSyncModel.StoreDeviceModels
             this.Devices = new List<DeviceScaffold>();
         }
 
+        /// <summary>
+        /// Gets or sets the external apis.
+        /// </summary>
+        /// <value>The external apis.</value>
         public List<ExternalApiScaffold> ExternalApis { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the devices.
+        /// </summary>
+        /// <value>The devices.</value>
         public List<DeviceScaffold> Devices { get; set; }
+
+        /// <summary>
+        /// Gets or sets the site devices.
+        /// </summary>
+        /// <value>The site devices.</value>
         public List<SiteDeviceScaffold> SiteDevices { get; set; }
 
+        /// <summary>
+        /// Gets or sets the removed external apis.
+        /// </summary>
+        /// <value>The removed external apis.</value>
         public List<ExternalApiScaffold> RemovedExternalApis { get; set; }
 
+        /// <summary>
+        /// Gets or sets the removed devices.
+        /// </summary>
+        /// <value>The removed devices.</value>
         public List<DeviceScaffold> RemovedDevices { get; set; }
 
+        /// <summary>
+        /// Gets or sets the removed site devices.
+        /// </summary>
+        /// <value>The removed site devices.</value>
         public List<SiteDeviceScaffold> RemovedSiteDevices { get; set; }
     }
 
@@ -50,13 +76,13 @@ namespace CloudSyncModel.StoreDeviceModels
 
     public static class StoreDeviceModelExtensions 
     {
-        public static void AddOrUpdate<TModel>(this DbSet<TModel> table, Expression<Func<TModel, bool>> query,
+        public static void AddOrUpdate<TModel>(this DbSet<TModel> table, Expression<Func<TModel, bool>> queryRule,
             Func<TModel> createAction,
-            Action<TModel> update)
+            Action<TModel> updateAction)
 
             where TModel : class 
         {
-            var entity = table.Where(query).SingleOrDefault();
+            var entity = table.Where(queryRule).SingleOrDefault();
 
             if (entity == null)
             {
@@ -65,7 +91,7 @@ namespace CloudSyncModel.StoreDeviceModels
             }
             else 
             {
-                update(entity);
+                updateAction(entity);
             }
 
         }
