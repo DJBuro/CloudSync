@@ -7,7 +7,7 @@ using CloudSync;
 
 namespace AndroAdmin.Helpers
 {
-    public class ErrorHelper
+    internal class ErrorHelper
     {
         public static void LogError(string severity, string method, Exception exception)
         {
